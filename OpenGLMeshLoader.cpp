@@ -42,9 +42,11 @@ int cameraZoom = 0;
 // Model Variables
 Model_3DS model_house;
 Model_3DS model_tree;
+Model_3DS model_car;
 
 // Textures
 GLTexture tex_ground;
+GLTexture tex_street;
 
 //=======================================================================
 // Lighting Configuration Function
@@ -166,6 +168,88 @@ void RenderGround()
 	glColor3f(1, 1, 1);	// Set material back to white instead of grey used for the ground texture.
 }
 
+
+void drawCube(double length, GLTexture texture, double texture_width){
+
+	glDisable(GL_LIGHTING);	// Disable lighting 
+
+	glColor3f(0.6, 0.6, 0.6);	// Dim the ground texture a bit
+
+	glEnable(GL_TEXTURE_2D);	// Enable 2D texturing
+
+	if (texture.texture[0])
+		glBindTexture(GL_TEXTURE_2D, texture.texture[0]);	// Bind the ground texture
+
+	static GLfloat n[6][3] =
+	{
+		{ -1.0, 0.0, 0.0 },
+		{ 0.0, 1.0, 0.0 },
+		{ 1.0, 0.0, 0.0 },
+		{ 0.0, -1.0, 0.0 },
+		{ 0.0, 0.0, 1.0 },
+		{ 0.0, 0.0, -1.0 }
+	};
+	static GLint faces[6][4] =
+	{
+		{ 0, 1, 2, 3 },
+		{ 3, 2, 6, 7 },
+		{ 7, 6, 5, 4 },
+		{ 4, 5, 1, 0 },
+		{ 5, 6, 2, 1 },
+		{ 7, 4, 0, 3 }
+	};
+	GLfloat v[8][3];
+	GLint i;
+
+	v[0][0] = v[1][0] = v[2][0] = v[3][0] = -length / 2;
+	v[4][0] = v[5][0] = v[6][0] = v[7][0] = length / 2;
+	v[0][1] = v[1][1] = v[4][1] = v[5][1] = -length / 2;
+	v[2][1] = v[3][1] = v[6][1] = v[7][1] = length / 2;
+	v[0][2] = v[3][2] = v[4][2] = v[7][2] = -length / 2;
+	v[1][2] = v[2][2] = v[5][2] = v[6][2] = length / 2;
+
+	for (i = 5; i >= 0; i--) {
+
+		glBegin(GL_QUADS);
+		glNormal3fv(&n[i][0]);
+		glTexCoord2f(0, 0);
+		glVertex3fv(&v[faces[i][0]][0]);
+		glTexCoord2f(texture_width, 0);
+		glVertex3fv(&v[faces[i][1]][0]);
+		glTexCoord2f(texture_width, texture_width);
+		glVertex3fv(&v[faces[i][2]][0]);
+		glTexCoord2f(0, texture_width);
+		glVertex3fv(&v[faces[i][3]][0]);
+		glEnd();
+	}
+
+
+
+	glEnable(GL_LIGHTING);	// Enable lighting again for other entites coming throung the pipeline.
+
+	glColor3f(1, 1, 1);	// Set material back to white instead of grey used for the ground texture.
+}
+
+void drawSphere(double radius){
+	GLUquadricObj * qobj;
+	qobj = gluNewQuadric();
+	//glTranslated(50, 0, 0);
+	//glRotated(90, 1, 0, 1);
+	//glBindTexture(GL_TEXTURE_2D, tex);
+	//gluQuadricTexture(qobj, true);
+	gluQuadricNormals(qobj, GL_SMOOTH);
+	gluSphere(qobj, radius, 100, 100);
+	gluDeleteQuadric(qobj);
+}
+
+void drawWall(double thickness, GLTexture texture, double texture_width) {
+	glPushMatrix();
+	glTranslated(0.5, 0.5 * thickness, 0.5);
+	glScaled(1.0, thickness, 1.0);
+	drawCube(1, texture, texture_width);
+	glPopMatrix();
+}
+
 //=======================================================================
 // Display Function
 //=======================================================================
@@ -183,16 +267,36 @@ void myDisplay(void)
 	// Draw Ground
 	RenderGround();
 
+
+	//draw Street
+	glPushMatrix();
+		glRotated(45, 0, 1, 0);
+		glScaled(7, 1, 50);
+		glTranslated(-0.5, 0, -0.5);
+		drawWall(0.02, tex_street,1);//ground
+	glPopMatrix();
+
+	// Draw car Model
+	glPushMatrix();
+	glTranslatef(0, 0, 0);
+	//glScalef(0.3, 0.3, 0.3);
+	//glScalef(0.1, 0.1, 0.1);
+	glRotated(-45, 0, 1, 0);
+	model_car.Draw();
+	glPopMatrix();
+
 	// Draw Tree Model
 	glPushMatrix();
-	glTranslatef(10, 0, 0);
+	glTranslatef(-7, 0, 0);
 	glScalef(0.7, 0.7, 0.7);
 	model_tree.Draw();
 	glPopMatrix();
 
 	// Draw house Model
 	glPushMatrix();
+	glRotatef(-25.f, 0, 1, 0);
 	glRotatef(90.f, 1, 0, 0);
+	glTranslated(0, -8, 0);
 	model_house.Draw();
 	glPopMatrix();
 
@@ -318,9 +422,11 @@ void LoadAssets()
 	// Loading Model files
 	model_house.Load("Models/house/house.3DS");
 	model_tree.Load("Models/tree/Tree1.3ds");
+	model_car.Load("Models/car/MURCIELAGO640.3ds");
 
 	// Loading texture files
 	tex_ground.Load("Textures/ground.bmp");
+	tex_street.Load("Textures/street.bmp");
 	loadBMP(&tex, "Textures/sky4-jpg.bmp", true);
 }
 
