@@ -13,7 +13,7 @@ char title[] = "3D Model Loader Sample";
 GLdouble fovy = 45.0;
 GLdouble aspectRatio = (GLdouble)WIDTH / (GLdouble)HEIGHT;
 GLdouble zNear = 0.1;
-GLdouble zFar = 200;
+GLdouble zFar = 400;
 
 class Vector
 {
@@ -339,7 +339,8 @@ void myDisplay(void)
 
 	GLUquadricObj * qobj;
 	qobj = gluNewQuadric();
-	glTranslated(50,0,0);
+	//glTranslated(50,0,0);
+	glRotated(180, 0, 1, 0);
 	glRotated(90,1,0,1);
 	glBindTexture(GL_TEXTURE_2D, tex);
 	gluQuadricTexture(qobj,true);
