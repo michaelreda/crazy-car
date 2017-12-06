@@ -17,7 +17,7 @@ char title[] = "3D Model Loader Sample";
 GLdouble fovy = 45.0;
 GLdouble aspectRatio = (GLdouble)WIDTH / (GLdouble)HEIGHT;
 GLdouble zNear = 0.1;
-GLdouble zFar = 400;
+GLdouble zFar = 600;
 
 class Vector
 {
@@ -50,6 +50,8 @@ Model_3DS model_car;
 
 // Textures
 GLTexture tex_farm;
+GLTexture tex_beach;
+GLTexture tex_beach_street;
 GLTexture tex_street;
 
 //=======================================================================
@@ -270,7 +272,7 @@ void drawBitmapText(char *string, float x, float y, float z)
 // Display Function
 //=======================================================================
 
-int rand_trees_num = rand() % 3 +2;
+int rand_trees_num = rand() % 2 +2;
 
 void myDisplay(void)
 {
@@ -299,46 +301,49 @@ void myDisplay(void)
 
 		// Draw Ground
 		glPushMatrix();
-		glRotated(45, 0, 1, 0);
-		glTranslated(0, 0, i * 50);
-		glScaled(1.3, 1, 2);
-		RenderGround(tex_farm);
+			glRotated(45, 0, 1, 0);
+			glTranslated(0, 0, i * 50);
+			glScaled(1.3, 1, 2);
+			RenderGround(tex_beach);
 		glPopMatrix();
 
 
 		//draw Street
-		glPushMatrix();
-		glRotated(45, 0, 1, 0);
-		glTranslated(0, 0, i * 50);
-		glScaled(1, 1, 2);
-		glScaled(7, 1, 40);
-		glTranslated(-0.5, 0, -0.5);
-		drawWall(0.02, tex_street, 1);//street
-		glPopMatrix();
-
-
-		for (int j = 0; j < rand_trees_num; j++){
-			// Draw Tree Model
+		for (int j = 0; j < 4; j++){
 			glPushMatrix();
-			glTranslated(i * 50 + j * 20, 0, i * 50 + j * 20);
-			if (j % 2 == 1)
-				glTranslatef(-7, 0, 0);//bring it right
-			else
-				glTranslatef(7, 0, 0);//bring it right
-			glScalef(0.7, 0.7, 0.7);
-			model_tree.Draw();
+				glRotated(45, 0, 1, 0);
+				glTranslated(0, 0,-j*10 + i * 50);
+				glScaled(1, 1, 2);
+				glScaled(7, 1, 10);
+				glTranslated(-0.5, 0, -0.5);
+				drawWall(0.02, tex_beach_street, 1);//street
 			glPopMatrix();
 		}
+		
+
+
+		//for (int j = 0; j < rand_trees_num; j++){
+		//	// Draw Tree Model
+		//	glPushMatrix();
+		//		glTranslated(i * 50 + j * 20, 0, i * 50 + j * 20);
+		//		if (j % 2 == 1)
+		//			glTranslatef(-7, 0, 0);//bring it right
+		//		else
+		//			glTranslatef(7, 0, 0);//bring it right
+		//		glScalef(0.7, 0.7, 0.7);
+		//		model_tree.Draw();
+		//	glPopMatrix();
+		//}
 
 
 		// Draw house Model
 		glPushMatrix();
-		glTranslated(i * 50, 0, i * 50);
-		glTranslated(10, 0, 0);//bring house left of the road
-		glRotatef(250.f, 0, 1, 0);
-		glRotatef(90.f, 1, 0, 0);
-		glTranslated(0, -8, 0);
-		model_house.Draw();
+			glTranslated(i * 50, 0, i * 50);
+			glTranslated(10, 0, 0);//bring house left of the road
+			glRotatef(250.f, 0, 1, 0);
+			glRotatef(90.f, 1, 0, 0);
+			glTranslated(0, -8, 0);
+			model_house.Draw();
 		glPopMatrix();
 
 
@@ -347,7 +352,7 @@ void myDisplay(void)
 	}
 
 	//drawing Farm env
-	for (int i = 0; i < 2; i++){
+	for (double i = 2.6; i < 4.6; i++){
 		glPushMatrix();
 		
 			// Draw Ground
@@ -373,7 +378,7 @@ void myDisplay(void)
 			for (int j = 0; j < rand_trees_num; j++){
 				// Draw Tree Model
 				glPushMatrix();
-					glTranslated(i * 50 + j * 20, 0, i * 50 + j * 20);
+					glTranslated(i * 40 + -j * 10, 0, i * 40 + -j * 10);
 					if (j%2 == 1)
 						glTranslatef(-7, 0, 0);//bring it right
 					else
@@ -386,7 +391,7 @@ void myDisplay(void)
 
 			// Draw house Model
 			glPushMatrix();
-				glTranslated(i * 50, 0, i * 50);
+				glTranslated(i * 30, 0, i * 30);
 				glTranslated(10, 0, 0);//bring house left of the road
 				glRotatef(250.f, 0, 1, 0);
 				glRotatef(90.f, 1, 0, 0);
@@ -537,7 +542,9 @@ void LoadAssets()
 
 	// Loading texture files
 	tex_farm.Load("Textures/ground.bmp");
+	tex_beach.Load("Textures/beach.bmp");
 	tex_street.Load("Textures/street.bmp");
+	tex_beach_street.Load("Textures/beach_street.bmp");
 	loadBMP(&tex, "Textures/sky4-jpg.bmp", true);
 }
 
