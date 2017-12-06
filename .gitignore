@@ -1,7 +1,7 @@
 # Prerequisites
 *.d
 
-/debug
+/Debug
 
 # Compiled Object files
 *.slo
