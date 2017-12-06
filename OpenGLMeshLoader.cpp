@@ -49,6 +49,7 @@ Model_3DS model_house;
 Model_3DS model_boat;
 Model_3DS model_tree;
 Model_3DS model_car;
+Model_3DS model_umbrella;
 
 // Textures
 GLTexture tex_farm;
@@ -289,7 +290,7 @@ void myDisplay(void)
 
 	//draw Time
 	glPushMatrix();
-		glColor3d(1, 1, 1);
+		//glColor3d(1, 1, 1);
 		glTranslated(-5.5, 0, 5.5);//place it right
 		char timestr[512];
 		sprintf(timestr, "Time: %g s", time);//converts double to string
@@ -324,18 +325,20 @@ void myDisplay(void)
 		
 
 
-		//for (int j = 0; j < rand_trees_num; j++){
-		//	// Draw Tree Model
-		//	glPushMatrix();
-		//		glTranslated(i * 50 + j * 20, 0, i * 50 + j * 20);
-		//		if (j % 2 == 1)
-		//			glTranslatef(-7, 0, 0);//bring it right
-		//		else
-		//			glTranslatef(7, 0, 0);//bring it right
-		//		glScalef(0.7, 0.7, 0.7);
-		//		model_tree.Draw();
-		//	glPopMatrix();
-		//}
+		for (int j = 0; j < rand_trees_num; j++){
+			// Draw umbrella Model
+			glPushMatrix();
+			glTranslated(i * 40 + -j * 10, 0, i * 40 + -j * 10);
+			if (j % 2 == 1)
+				glTranslatef(-10, 0, 0);//bring it right
+			else
+				glTranslatef(10, 0, 0);//bring it right
+
+			glTranslatef(0, 2, 0);
+			glScalef(50, 50, 50);
+			model_umbrella.Draw();
+			glPopMatrix();
+		}
 
 
 		// Draw boat Model
@@ -540,6 +543,7 @@ void LoadAssets()
 	model_boat.Load("Models/boat/Cannoe.3ds");
 	model_tree.Load("Models/tree/Tree1.3ds");
 	model_car.Load("Models/car/MURCIELAGO640.3ds");
+	model_umbrella.Load("Models/umbrella/Umbrella N040608.3ds");
 
 	// Loading texture files
 	tex_farm.Load("Textures/ground.bmp");
