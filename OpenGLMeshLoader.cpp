@@ -265,15 +265,18 @@ void myDisplay(void)
 	glLightfv(GL_LIGHT0, GL_AMBIENT, lightIntensity);
 
 	// Draw Ground
-	RenderGround();
+	glPushMatrix();
+	glRotated(45, 0, 1, 0);
+		RenderGround();
+	glPopMatrix();
 
 
 	//draw Street
 	glPushMatrix();
 		glRotated(45, 0, 1, 0);
-		glScaled(7, 1, 50);
+		glScaled(7, 1, 40);
 		glTranslated(-0.5, 0, -0.5);
-		drawWall(0.02, tex_street,1);//ground
+		drawWall(0.02, tex_street,1);//street
 	glPopMatrix();
 
 	// Draw car Model
