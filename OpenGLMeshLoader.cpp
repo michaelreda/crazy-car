@@ -11,6 +11,7 @@ double time = 0;
 
 
 GLuint tex;
+GLuint tex_boat;
 char title[] = "3D Model Loader Sample";
 
 // 3D Projection Options
@@ -45,6 +46,7 @@ int cameraZoom = 0;
 
 // Model Variables
 Model_3DS model_house;
+Model_3DS model_boat;
 Model_3DS model_tree;
 Model_3DS model_car;
 
@@ -309,10 +311,10 @@ void myDisplay(void)
 
 
 		//draw Street
-		for (int j = 0; j < 4; j++){
+		for (double j = -0.6; j < 1.6; j++){
 			glPushMatrix();
 				glRotated(45, 0, 1, 0);
-				glTranslated(0, 0,-j*10 + i * 50);
+				glTranslated(0, 0,j*20 + i * 50);
 				glScaled(1, 1, 2);
 				glScaled(7, 1, 10);
 				glTranslated(-0.5, 0, -0.5);
@@ -336,14 +338,12 @@ void myDisplay(void)
 		//}
 
 
-		// Draw house Model
+		// Draw boat Model
 		glPushMatrix();
-			glTranslated(i * 50, 0, i * 50);
+			glTranslated(i * 30, 0, i * 30);
 			glTranslated(10, 0, 0);//bring house left of the road
-			glRotatef(250.f, 0, 1, 0);
-			glRotatef(90.f, 1, 0, 0);
-			glTranslated(0, -8, 0);
-			model_house.Draw();
+			glScaled(0.5, 0.5, 0.5);
+			model_boat.Draw();
 		glPopMatrix();
 
 
@@ -537,6 +537,7 @@ void LoadAssets()
 {
 	// Loading Model files
 	model_house.Load("Models/house/house.3DS");
+	model_boat.Load("Models/boat/Cannoe.3ds");
 	model_tree.Load("Models/tree/Tree1.3ds");
 	model_car.Load("Models/car/MURCIELAGO640.3ds");
 
@@ -546,6 +547,7 @@ void LoadAssets()
 	tex_street.Load("Textures/street.bmp");
 	tex_beach_street.Load("Textures/beach_street.bmp");
 	loadBMP(&tex, "Textures/sky4-jpg.bmp", true);
+	loadBMP(&tex_boat, "Models/boat/Might be wood.bmp", true);
 }
 
 //=======================================================================
