@@ -6,6 +6,10 @@
 int WIDTH = 1280;
 int HEIGHT = 720;
 
+
+double time = 0;
+
+
 GLuint tex;
 char title[] = "3D Model Loader Sample";
 
@@ -45,7 +49,7 @@ Model_3DS model_tree;
 Model_3DS model_car;
 
 // Textures
-GLTexture tex_ground;
+GLTexture tex_farm;
 GLTexture tex_street;
 
 //=======================================================================
@@ -139,7 +143,7 @@ void myInit(void)
 //=======================================================================
 // Render Ground Function
 //=======================================================================
-void RenderGround()
+void RenderGround(GLTexture groundTex)
 {
 	glDisable(GL_LIGHTING);	// Disable lighting 
 
@@ -147,7 +151,7 @@ void RenderGround()
 
 	glEnable(GL_TEXTURE_2D);	// Enable 2D texturing
 
-	glBindTexture(GL_TEXTURE_2D, tex_ground.texture[0]);	// Bind the ground texture
+	glBindTexture(GL_TEXTURE_2D, groundTex.texture[0]);	// Bind the ground texture
 
 	glPushMatrix();
 	glBegin(GL_QUADS);
@@ -250,6 +254,18 @@ void drawWall(double thickness, GLTexture texture, double texture_width) {
 	glPopMatrix();
 }
 
+//text function
+void drawBitmapText(char *string, float x, float y, float z)
+{
+	char *c;
+	glRasterPos3f(x, y,z);
+
+	for (c = string; *c != '\0'; c++)
+	{
+		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);
+	}
+}
+
 //=======================================================================
 // Display Function
 //=======================================================================
@@ -267,10 +283,71 @@ void myDisplay(void)
 	glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
 	glLightfv(GL_LIGHT0, GL_AMBIENT, lightIntensity);
 
+	//draw Time
+	glPushMatrix();
+		glColor3d(1, 1, 1);
+		glTranslated(-5.5, 0, 5.5);//place it right
+		char timestr[512];
+		sprintf(timestr, "Time: %g s", time);//converts double to string
+		drawBitmapText(timestr, Eye.x + 10, 0, Eye.z + 10); // moves with the camera
+	glPopMatrix();
 
-	//drawing env ground and street
 
-	for (int i = 0; i < 4; i++){
+	//drawing Beach env
+	for (int i = 0; i < 2; i++){
+		glPushMatrix();
+
+		// Draw Ground
+		glPushMatrix();
+		glRotated(45, 0, 1, 0);
+		glTranslated(0, 0, i * 50);
+		glScaled(1.3, 1, 2);
+		RenderGround(tex_farm);
+		glPopMatrix();
+
+
+		//draw Street
+		glPushMatrix();
+		glRotated(45, 0, 1, 0);
+		glTranslated(0, 0, i * 50);
+		glScaled(1, 1, 2);
+		glScaled(7, 1, 40);
+		glTranslated(-0.5, 0, -0.5);
+		drawWall(0.02, tex_street, 1);//street
+		glPopMatrix();
+
+
+		for (int j = 0; j < rand_trees_num; j++){
+			// Draw Tree Model
+			glPushMatrix();
+			glTranslated(i * 50 + j * 20, 0, i * 50 + j * 20);
+			if (j % 2 == 1)
+				glTranslatef(-7, 0, 0);//bring it right
+			else
+				glTranslatef(7, 0, 0);//bring it right
+			glScalef(0.7, 0.7, 0.7);
+			model_tree.Draw();
+			glPopMatrix();
+		}
+
+
+		// Draw house Model
+		glPushMatrix();
+		glTranslated(i * 50, 0, i * 50);
+		glTranslated(10, 0, 0);//bring house left of the road
+		glRotatef(250.f, 0, 1, 0);
+		glRotatef(90.f, 1, 0, 0);
+		glTranslated(0, -8, 0);
+		model_house.Draw();
+		glPopMatrix();
+
+
+		glPopMatrix();
+
+	}
+
+	//drawing Farm env
+	for (int i = 0; i < 2; i++){
 		glPushMatrix();
 		
 			// Draw Ground
@@ -278,7 +355,7 @@ void myDisplay(void)
 				glRotated(45, 0, 1, 0);
 				glTranslated(0, 0, i * 50);
 				glScaled(1.3, 1, 2);
-				RenderGround();
+				RenderGround(tex_farm);
 			glPopMatrix();
 
 
@@ -459,10 +536,24 @@ void LoadAssets()
 	model_car.Load("Models/car/MURCIELAGO640.3ds");
 
 	// Loading texture files
-	tex_ground.Load("Textures/ground.bmp");
+	tex_farm.Load("Textures/ground.bmp");
 	tex_street.Load("Textures/street.bmp");
 	loadBMP(&tex, "Textures/sky4-jpg.bmp", true);
 }
+
+//=======================================================================
+// Animation Functions
+//=======================================================================
+
+
+void time_counter(int val)//timer animation function, allows the user to pass an integer valu to the timer function.
+{
+	time += 0.1;
+
+	glutPostRedisplay();						// redraw 		
+	glutTimerFunc(100, time_counter, 0);					//recall the time function after 1000 ms and pass a zero value as an input to the time func.
+}
+
 
 //=======================================================================
 // Main Function
@@ -488,6 +579,9 @@ void main(int argc, char** argv)
 	glutMouseFunc(myMouse);
 
 	glutReshapeFunc(myReshape);
+
+
+	glutTimerFunc(0, time_counter, 0);
 
 	myInit();
 
