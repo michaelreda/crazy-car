@@ -13,7 +13,7 @@ char title[] = "3D Model Loader Sample";
 GLdouble fovy = 45.0;
 GLdouble aspectRatio = (GLdouble)WIDTH / (GLdouble)HEIGHT;
 GLdouble zNear = 0.1;
-GLdouble zFar = 100;
+GLdouble zFar = 200;
 
 class Vector
 {
@@ -33,8 +33,8 @@ public:
 	}
 };
 
-Vector Eye(20, 5, 20);
-Vector At(0, 0, 0);
+Vector Eye(-20, 5, -20);
+Vector At(zFar, 0, zFar);
 Vector Up(0, 1, 0);
 
 int cameraZoom = 0;
@@ -253,6 +253,9 @@ void drawWall(double thickness, GLTexture texture, double texture_width) {
 //=======================================================================
 // Display Function
 //=======================================================================
+
+int rand_trees_num = rand() % 3 +2;
+
 void myDisplay(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -264,44 +267,71 @@ void myDisplay(void)
 	glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
 	glLightfv(GL_LIGHT0, GL_AMBIENT, lightIntensity);
 
-	// Draw Ground
-	glPushMatrix();
-	glRotated(45, 0, 1, 0);
-		RenderGround();
-	glPopMatrix();
+
+	//drawing env ground and street
+
+	for (int i = 0; i < 4; i++){
+		glPushMatrix();
+		
+			// Draw Ground
+			glPushMatrix();
+				glRotated(45, 0, 1, 0);
+				glTranslated(0, 0, i * 50);
+				glScaled(1.3, 1, 2);
+				RenderGround();
+			glPopMatrix();
 
 
-	//draw Street
-	glPushMatrix();
-		glRotated(45, 0, 1, 0);
-		glScaled(7, 1, 40);
-		glTranslated(-0.5, 0, -0.5);
-		drawWall(0.02, tex_street,1);//street
-	glPopMatrix();
+			//draw Street
+			glPushMatrix();
+				glRotated(45, 0, 1, 0);
+				glTranslated(0, 0, i * 50);
+				glScaled(1, 1, 2);
+				glScaled(7, 1, 40);
+				glTranslated(-0.5, 0, -0.5);
+				drawWall(0.02, tex_street, 1);//street
+			glPopMatrix();
+
+
+			for (int j = 0; j < rand_trees_num; j++){
+				// Draw Tree Model
+				glPushMatrix();
+					glTranslated(i * 50 + j * 20, 0, i * 50 + j * 20);
+					if (j%2 == 1)
+						glTranslatef(-7, 0, 0);//bring it right
+					else
+						glTranslatef(7, 0, 0);//bring it right
+					glScalef(0.7, 0.7, 0.7);
+					model_tree.Draw();
+				glPopMatrix();
+			}
+			
+
+			// Draw house Model
+			glPushMatrix();
+				glTranslated(i * 50, 0, i * 50);
+				glTranslated(10, 0, 0);//bring house left of the road
+				glRotatef(250.f, 0, 1, 0);
+				glRotatef(90.f, 1, 0, 0);
+				glTranslated(0, -8, 0);
+				model_house.Draw();
+			glPopMatrix();
+
+
+		glPopMatrix();
+
+	}
 
 	// Draw car Model
 	glPushMatrix();
-	glTranslatef(0, 0, 0);
-	//glScalef(0.3, 0.3, 0.3);
-	//glScalef(0.1, 0.1, 0.1);
-	glRotated(-45, 0, 1, 0);
-	model_car.Draw();
+		glTranslatef(0, 0, 0);
+		//glScalef(0.3, 0.3, 0.3);
+		//glScalef(0.1, 0.1, 0.1);
+		glRotated(-45, 0, 1, 0);
+		model_car.Draw();
 	glPopMatrix();
 
-	// Draw Tree Model
-	glPushMatrix();
-	glTranslatef(-7, 0, 0);
-	glScalef(0.7, 0.7, 0.7);
-	model_tree.Draw();
-	glPopMatrix();
-
-	// Draw house Model
-	glPushMatrix();
-	glRotatef(-25.f, 0, 1, 0);
-	glRotatef(90.f, 1, 0, 0);
-	glTranslated(0, -8, 0);
-	model_house.Draw();
-	glPopMatrix();
+	
 
 
 //sky box
@@ -314,7 +344,7 @@ void myDisplay(void)
 	glBindTexture(GL_TEXTURE_2D, tex);
 	gluQuadricTexture(qobj,true);
 	gluQuadricNormals(qobj,GL_SMOOTH);
-	gluSphere(qobj,100,100,100);
+	gluSphere(qobj,zFar/2,100,100);
 	gluDeleteQuadric(qobj);
 	
 	
