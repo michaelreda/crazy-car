@@ -442,16 +442,64 @@ void myDisplay(void)
 }
 
 //=======================================================================
+// camera animation Function
+//=======================================================================
+void camera_motion(int val)//timer animation function, allows the user to pass an integer valu to the timer function.
+{
+	if (Eye.x > zFar)
+		return;
+
+	Eye.x += 0.2;
+	Eye.z += 0.2;
+
+	glLoadIdentity();	//Clear Model_View Matrix
+
+	glLoadIdentity();	//Clear Model_View Matrix
+
+	gluLookAt(Eye.x, Eye.y, Eye.z, At.x, At.y, At.z, Up.x, Up.y, Up.z);	//Setup Camera with modified paramters
+
+	GLfloat light_position[] = { 0.0f, 10.0f, 0.0f, 1.0f };
+	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+
+	glutPostRedisplay();						// redraw 		
+	glutTimerFunc(50, camera_motion, 0);					//recall the time function after 1000 ms and pass a zero value as an input to the time func.
+}
+
+
+void reset_camera_position(){
+	Eye.x = -20;
+	Eye.z = -20;
+
+	glLoadIdentity();	//Clear Model_View Matrix
+
+	glLoadIdentity();	//Clear Model_View Matrix
+
+	gluLookAt(Eye.x, Eye.y, Eye.z, At.x, At.y, At.z, Up.x, Up.y, Up.z);	//Setup Camera with modified paramters
+
+	GLfloat light_position[] = { 0.0f, 10.0f, 0.0f, 1.0f };
+	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+
+	glutPostRedisplay();
+}
+
+//=======================================================================
 // Keyboard Function
 //=======================================================================
 void myKeyboard(unsigned char button, int x, int y)
 {
 	switch (button)
 	{
+
+	case 'c':
+		glutTimerFunc(0, camera_motion, 0);
+		break;
+	case 'r':
+		reset_camera_position();
+		break;
 	case 'w':
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		break;
-	case 'r':
+	case 'b':
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		break;
 	case 27:
@@ -566,6 +614,7 @@ void time_counter(int val)//timer animation function, allows the user to pass an
 	glutPostRedisplay();						// redraw 		
 	glutTimerFunc(100, time_counter, 0);					//recall the time function after 1000 ms and pass a zero value as an input to the time func.
 }
+
 
 
 //=======================================================================
