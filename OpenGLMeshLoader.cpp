@@ -58,6 +58,9 @@ GLTexture tex_beach;
 GLTexture tex_beach_street;
 GLTexture tex_street;
 
+//variables
+double ground;
+
 //=======================================================================
 // Lighting Configuration Function
 //=======================================================================
@@ -294,152 +297,213 @@ void myDisplay(void)
 		//glColor3d(1, 1, 1);
 		glTranslated(-5.5, 0, 5.5);//place it right
 		char timestr[512];
-		sprintf(timestr, "Time: %g s", time);//converts double to string
+		//sprintf(timestr, "Time: %g s", time);//converts double to string
+		sprintf(timestr, "Ground: %g s", ground);//converts double to string
 		drawBitmapText(timestr, Eye.x + 10, 0, Eye.z + 10); // moves with the camera
 	glPopMatrix();
 
 
-	//drawing Beach env
-	for (int i = 0; i < 5; i++){
-		glPushMatrix();
-
-		// Draw Ground
-		glPushMatrix();
-			glRotated(45, 0, 1, 0);
-			glTranslated(0, 0, i * 50);
-			glScaled(1.3, 1, 2);
-			RenderGround(tex_beach);
-		glPopMatrix();
-
-
-		//draw Street
-		for (double j = -0.6; j < 1.6; j++){
+	glPushMatrix(); //scenes
+		glTranslated(ground, 0, ground);
+		//drawing Beach env
+		for (int i = 0; i < 5; i++){
 			glPushMatrix();
-				glRotated(45, 0, 1, 0);
-				glTranslated(0, 0,j*20 + i * 50);
-				glScaled(1, 1, 2);
-				glScaled(7, 1, 10);
-				glTranslated(-0.5, 0, -0.5);
-				drawWall(0.02, tex_beach_street, 1);//street
-			glPopMatrix();
-		}
-		
 
-
-		for (int j = 0; j < rand_trees_num; j++){
-			// Draw umbrella Model
-			glPushMatrix();
-			glTranslated(i * 40 + -j * 10, 0, i * 40 + -j * 10);
-			if (j % 2 == 1)
-				glTranslatef(-10, 0, 0);//bring it right
-			else
-				glTranslatef(10, 0, 0);//bring it right
-
-			glTranslatef(0, 2, 0);
-			glScalef(50, 50, 50);
-			model_umbrella.Draw();
-			glPopMatrix();
-		}
-
-
-		// Draw boat Model
-		glPushMatrix();
-			glTranslated(i * 30, 0, i * 30);
-			glTranslated(10, 0, 0);//bring house left of the road
-			glScaled(0.5, 0.5, 0.5);
-			model_boat.Draw();
-		glPopMatrix();
-
-
-		glPopMatrix();
-
-	}
-
-	//drawing Farm env
-	for (double i = 5.6; i < 9.6; i+=1.6){
-		glPushMatrix();
-		
 			// Draw Ground
 			glPushMatrix();
 				glRotated(45, 0, 1, 0);
 				glTranslated(0, 0, i * 50);
 				glScaled(1.3, 1, 2);
-				RenderGround(tex_farm);
+				RenderGround(tex_beach);
 			glPopMatrix();
 
 
 			//draw Street
-			glPushMatrix();
-				glRotated(45, 0, 1, 0);
-				glTranslated(0, 0, i * 50);
-				glScaled(1, 1, 2);
-				glScaled(7, 1, 40);
-				glTranslated(-0.5, 0, -0.5);
-				drawWall(0.02, tex_street, 1);//street
-			glPopMatrix();
+			for (double j = -0.6; j < 1.6; j++){
+				glPushMatrix();
+					glRotated(45, 0, 1, 0);
+					glTranslated(0, 0,j*20 + i * 50);
+					glScaled(1, 1, 2);
+					glScaled(7, 1, 10);
+					glTranslated(-0.5, 0, -0.5);
+					drawWall(0.02, tex_beach_street, 1);//street
+				glPopMatrix();
+			}
+		
 
 
 			for (int j = 0; j < rand_trees_num; j++){
-				// Draw Tree Model
+				// Draw umbrella Model
 				glPushMatrix();
-					glTranslated(i * 35 + -j * 10, 0, i * 35 + -j * 10);
-					if (j%2 == 1)
-						glTranslatef(-7, 0, 0);//bring it right
-					else
-						glTranslatef(7, 0, 0);//bring it right
-					glScalef(0.7, 0.7, 0.7);
-					model_tree.Draw();
+				glTranslated(i * 40 + -j * 10, 0, i * 40 + -j * 10);
+				if (j % 2 == 1)
+					glTranslatef(-10, 0, 0);//bring it right
+				else
+					glTranslatef(10, 0, 0);//bring it right
+
+				glTranslatef(0, 2, 0);
+				glScalef(50, 50, 50);
+				model_umbrella.Draw();
 				glPopMatrix();
 			}
-			
 
-			// Draw house Model
+
+			// Draw boat Model
 			glPushMatrix();
 				glTranslated(i * 30, 0, i * 30);
 				glTranslated(10, 0, 0);//bring house left of the road
-				glRotatef(250.f, 0, 1, 0);
-				glRotatef(90.f, 1, 0, 0);
-				glTranslated(0, -8, 0);
-				model_house.Draw();
+				glScaled(0.5, 0.5, 0.5);
+				model_boat.Draw();
 			glPopMatrix();
 
 
-		glPopMatrix();
+			glPopMatrix();
 
-	}
+		}
 
-
-
-
-	//drawing City env
-	for (double i = 9.6; i < 14.6; i+=1.6){
-		glPushMatrix();
+		//drawing Farm env
+		for (double i = 5.6; i < 9.6; i+=1.6){
+			glPushMatrix();
 		
-			// Draw Ground
-			glPushMatrix();
-				glRotated(45, 0, 1, 0);
-				glTranslated(0, 0, i * 50);
-				glScaled(1.3, 1, 2);
-				RenderGround(tex_city);
+				// Draw Ground
+				glPushMatrix();
+					glRotated(45, 0, 1, 0);
+					glTranslated(0, 0, i * 50);
+					glScaled(1.3, 1, 2);
+					RenderGround(tex_farm);
+				glPopMatrix();
+
+
+				//draw Street
+				glPushMatrix();
+					glRotated(45, 0, 1, 0);
+					glTranslated(0, 0, i * 50);
+					glScaled(1, 1, 2);
+					glScaled(7, 1, 40);
+					glTranslated(-0.5, 0, -0.5);
+					drawWall(0.02, tex_street, 1);//street
+				glPopMatrix();
+
+
+				for (int j = 0; j < rand_trees_num; j++){
+					// Draw Tree Model
+					glPushMatrix();
+						glTranslated(i * 35 + -j * 10, 0, i * 35 + -j * 10);
+						if (j%2 == 1)
+							glTranslatef(-7, 0, 0);//bring it right
+						else
+							glTranslatef(7, 0, 0);//bring it right
+						glScalef(0.7, 0.7, 0.7);
+						model_tree.Draw();
+					glPopMatrix();
+				}
+			
+
+				// Draw house Model
+				glPushMatrix();
+					glTranslated(i * 30, 0, i * 30);
+					glTranslated(10, 0, 0);//bring house left of the road
+					glRotatef(250.f, 0, 1, 0);
+					glRotatef(90.f, 1, 0, 0);
+					glTranslated(0, -8, 0);
+					model_house.Draw();
+				glPopMatrix();
+
+
 			glPopMatrix();
 
+		}
 
-			//draw Street
+
+
+
+		//drawing City env
+		for (double i = 10.3; i < 15.3; i+=1.3){
 			glPushMatrix();
-				glRotated(45, 0, 1, 0);
-				glTranslated(0, 0, i * 50);
-				glScaled(1, 1, 2);
-				glScaled(7, 1, 40);
-				glTranslated(-0.5, 0, -0.5);
-				drawWall(0.02, tex_street, 1);//street
+		
+				// Draw Ground
+				glPushMatrix();
+					glRotated(45, 0, 1, 0);
+					glTranslated(0, 0, i * 50);
+					glScaled(1.3, 1, 2);
+					RenderGround(tex_city);
+				glPopMatrix();
+
+
+				//draw Street
+				glPushMatrix();
+					glRotated(45, 0, 1, 0);
+					glTranslated(0, 0, i * 50);
+					glScaled(1, 1, 2);
+					glScaled(7, 1, 40);
+					glTranslated(-0.5, 0, -0.5);
+					drawWall(0.02, tex_street, 1);//street
+				glPopMatrix();
+
+
+
 			glPopMatrix();
 
+		}
+
+		////drawing last Beach env
+		//for (double i = 15.8; i < 18; i++){
+		//	glPushMatrix();
+
+		//	// Draw Ground
+		//	glPushMatrix();
+		//		glRotated(45, 0, 1, 0);
+		//		glTranslated(0, 0, i * 50);
+		//		glScaled(1.3, 1, 2);
+		//		RenderGround(tex_beach);
+		//	glPopMatrix();
 
 
-		glPopMatrix();
+		//	//draw Street
+		//	for (double j = -0.6; j < 1.6; j++){
+		//		glPushMatrix();
+		//			glRotated(45, 0, 1, 0);
+		//			glTranslated(0, 0,j*20 + i * 50);
+		//			glScaled(1, 1, 2);
+		//			glScaled(7, 1, 10);
+		//			glTranslated(-0.5, 0, -0.5);
+		//			drawWall(0.02, tex_beach_street, 1);//street
+		//		glPopMatrix();
+		//	}
+		//
 
-	}
 
+		//	for (int j = 0; j < rand_trees_num; j++){
+		//		// Draw umbrella Model
+		//		glPushMatrix();
+		//		glTranslated(i * 40 + -j * 10, 0, i * 40 + -j * 10);
+		//		if (j % 2 == 1)
+		//			glTranslatef(-10, 0, 0);//bring it right
+		//		else
+		//			glTranslatef(10, 0, 0);//bring it right
+
+		//		glTranslatef(0, 2, 0);
+		//		glScalef(50, 50, 50);
+		//		model_umbrella.Draw();
+		//		glPopMatrix();
+		//	}
+
+
+		//	// Draw boat Model
+		//	glPushMatrix();
+		//		glTranslated(i * 30, 0, i * 30);
+		//		glTranslated(10, 0, 0);//bring house left of the road
+		//		glScaled(0.5, 0.5, 0.5);
+		//		model_boat.Draw();
+		//	glPopMatrix();
+
+
+		//	glPopMatrix();
+
+		//}
+
+
+	glPopMatrix(); //scenes
 
 
 
@@ -475,6 +539,20 @@ void myDisplay(void)
 	
 	
 	glutSwapBuffers();
+}
+
+//=======================================================================
+// ground animation Function
+//=======================================================================
+void ground_motion(int val)//timer animation function, allows the user to pass an integer valu to the timer function.
+{
+	if (ground < -535)
+		ground = 0;
+
+	ground -= 1;
+
+	glutPostRedisplay();						// redraw 		
+	glutTimerFunc(50, ground_motion, 0);					//recall the time function after 1000 ms and pass a zero value as an input to the time func.
 }
 
 //=======================================================================
@@ -526,6 +604,9 @@ void myKeyboard(unsigned char button, int x, int y)
 	switch (button)
 	{
 
+	case 'g':
+		glutTimerFunc(0, ground_motion, 0);
+		break;
 	case 'c':
 		glutTimerFunc(0, camera_motion, 0);
 		break;
