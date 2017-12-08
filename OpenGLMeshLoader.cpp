@@ -18,7 +18,7 @@ char title[] = "3D Model Loader Sample";
 GLdouble fovy = 45.0;
 GLdouble aspectRatio = (GLdouble)WIDTH / (GLdouble)HEIGHT;
 GLdouble zNear = 0.1;
-GLdouble zFar = 1200;
+GLdouble zFar = 1600;
 
 class Vector
 {
@@ -53,6 +53,7 @@ Model_3DS model_umbrella;
 
 // Textures
 GLTexture tex_farm;
+GLTexture tex_city;
 GLTexture tex_beach;
 GLTexture tex_beach_street;
 GLTexture tex_street;
@@ -381,7 +382,7 @@ void myDisplay(void)
 			for (int j = 0; j < rand_trees_num; j++){
 				// Draw Tree Model
 				glPushMatrix();
-					glTranslated(i * 40 + -j * 10, 0, i * 40 + -j * 10);
+					glTranslated(i * 35 + -j * 10, 0, i * 35 + -j * 10);
 					if (j%2 == 1)
 						glTranslatef(-7, 0, 0);//bring it right
 					else
@@ -406,6 +407,41 @@ void myDisplay(void)
 		glPopMatrix();
 
 	}
+
+
+
+
+	//drawing City env
+	for (double i = 9.6; i < 14.6; i+=1.6){
+		glPushMatrix();
+		
+			// Draw Ground
+			glPushMatrix();
+				glRotated(45, 0, 1, 0);
+				glTranslated(0, 0, i * 50);
+				glScaled(1.3, 1, 2);
+				RenderGround(tex_city);
+			glPopMatrix();
+
+
+			//draw Street
+			glPushMatrix();
+				glRotated(45, 0, 1, 0);
+				glTranslated(0, 0, i * 50);
+				glScaled(1, 1, 2);
+				glScaled(7, 1, 40);
+				glTranslated(-0.5, 0, -0.5);
+				drawWall(0.02, tex_street, 1);//street
+			glPopMatrix();
+
+
+
+		glPopMatrix();
+
+	}
+
+
+
 
 	// Draw car Model
 	glPushMatrix();
@@ -594,6 +630,7 @@ void LoadAssets()
 	model_umbrella.Load("Models/umbrella/Umbrella N040608.3ds");
 
 	// Loading texture files
+	tex_city.Load("Textures/city.bmp");
 	tex_farm.Load("Textures/ground.bmp");
 	tex_beach.Load("Textures/beach.bmp");
 	tex_street.Load("Textures/street.bmp");
