@@ -299,7 +299,7 @@ void myDisplay(void)
 
 
 	//drawing Beach env
-	for (int i = 0; i < 2; i++){
+	for (int i = 0; i < 5; i++){
 		glPushMatrix();
 
 		// Draw Ground
@@ -355,7 +355,7 @@ void myDisplay(void)
 	}
 
 	//drawing Farm env
-	for (double i = 2.6; i < 7.6; i+=1.6){
+	for (double i = 5.6; i < 9.6; i+=1.6){
 		glPushMatrix();
 		
 			// Draw Ground
