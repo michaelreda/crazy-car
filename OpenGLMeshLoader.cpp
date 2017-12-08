@@ -280,7 +280,7 @@ void drawBitmapText(char *string, float x, float y, float z)
 //=======================================================================
 
 int rand_trees_num = rand() % 2 +2;
-
+int car_status = 5;
 void myDisplay(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -297,9 +297,19 @@ void myDisplay(void)
 		//glColor3d(1, 1, 1);
 		glTranslated(-5.5, 0, 5.5);//place it right
 		char timestr[512];
-		//sprintf(timestr, "Time: %g s", time);//converts double to string
-		sprintf(timestr, "Ground: %g s", ground);//converts double to string
+		sprintf(timestr, "Time: %g s", time);//converts double to string
+		//sprintf(timestr, "Ground: %g s", ground);//converts double to string
 		drawBitmapText(timestr, Eye.x + 10, 0, Eye.z + 10); // moves with the camera
+	glPopMatrix();
+
+
+	//draw Car Status
+	glPushMatrix();
+		//glColor3d(1, 1, 1);
+		glTranslated(5.5, 0, -5.5);//place it right
+		char statusStr[512];
+		sprintf(statusStr, "Car Status: %d", car_status);//converts double to string
+		drawBitmapText(statusStr, Eye.x + 10, 0, Eye.z + 10); // moves with the camera
 	glPopMatrix();
 
 
