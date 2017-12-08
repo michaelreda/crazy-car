@@ -18,7 +18,7 @@ char title[] = "3D Model Loader Sample";
 GLdouble fovy = 45.0;
 GLdouble aspectRatio = (GLdouble)WIDTH / (GLdouble)HEIGHT;
 GLdouble zNear = 0.1;
-GLdouble zFar = 600;
+GLdouble zFar = 1200;
 
 class Vector
 {
@@ -355,7 +355,7 @@ void myDisplay(void)
 	}
 
 	//drawing Farm env
-	for (double i = 2.6; i < 4.6; i++){
+	for (double i = 2.6; i < 7.6; i+=1.6){
 		glPushMatrix();
 		
 			// Draw Ground
