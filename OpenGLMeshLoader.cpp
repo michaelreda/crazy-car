@@ -54,6 +54,8 @@ Model_3DS model_tree;
 Model_3DS model_car;
 Model_3DS model_umbrella;
 Model_3DS model_road_cone;
+Model_3DS model_barrel;
+Model_3DS model_building;
 
 // Textures
 GLTexture tex_farm;
@@ -296,6 +298,21 @@ void draw_road_cone(double distance, int lane){
 	glPopMatrix();
 }
 
+void draw_barrel(double distance, int lane){
+	glPushMatrix();
+		glTranslated(distance, 0, distance);
+		if (lane == LEFT_LANE){
+			glTranslated(2, 0, 0);//bring house left of the road
+		}
+		else if (lane == RIGHT_LANE){
+			glTranslated(-2, 0, 0);//bring house left of the road
+		}
+		//glTranslated(0, -3, 0);
+		glScaled(0.02, 0.02, 0.02);
+		model_barrel.Draw();
+	glPopMatrix();
+}
+
 //=======================================================================
 // Display Function
 //=======================================================================
@@ -342,9 +359,14 @@ void myDisplay(void)
 
 		//obstacles
 		glPushMatrix();
-		for (double i = 0; i < 530; i+=50){
+		for (double i = 50; i < 530; i+=200){
 			draw_road_cone(i, LEFT_LANE);
-			draw_road_cone(i+25, RIGHT_LANE);
+			draw_road_cone(i+100, RIGHT_LANE);
+		}
+
+		for (double i = 0; i < 530; i += 200){
+			draw_barrel(i, LEFT_LANE);
+			draw_barrel(i + 100, RIGHT_LANE);
 		}
 		glPopMatrix();
 
@@ -753,6 +775,8 @@ void LoadAssets()
 	model_car.Load("Models/car/MURCIELAGO640.3ds");
 	model_umbrella.Load("Models/umbrella/Umbrella N040608.3ds");
 	model_road_cone.Load("Models/road_cone.3ds");
+	model_barrel.Load("Models/barrel.3ds");
+	model_building.Load("Models/building.3ds");
 
 	// Loading texture files
 	tex_city.Load("Textures/city.bmp");
