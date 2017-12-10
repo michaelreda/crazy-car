@@ -10,6 +10,9 @@ int HEIGHT = 720;
 double time = 0;
 
 
+#define LEFT_LANE 0
+#define RIGHT_LANE 1
+
 GLuint tex;
 GLuint tex_boat;
 char title[] = "3D Model Loader Sample";
@@ -50,6 +53,7 @@ Model_3DS model_boat;
 Model_3DS model_tree;
 Model_3DS model_car;
 Model_3DS model_umbrella;
+Model_3DS model_road_cone;
 
 // Textures
 GLTexture tex_farm;
@@ -276,6 +280,23 @@ void drawBitmapText(char *string, float x, float y, float z)
 }
 
 //=======================================================================
+// Obtacles
+//=======================================================================
+void draw_road_cone(double distance, int lane){
+	glPushMatrix();
+		glTranslated(distance, 0, distance);
+		if (lane == LEFT_LANE){
+			glTranslated(2, 0, 0);//bring house left of the road
+		}
+		else if (lane == RIGHT_LANE){
+			glTranslated(-2, 0, 0);//bring house left of the road
+		}
+		glScaled(0.03, 0.03, 0.03);
+		model_road_cone.Draw();
+	glPopMatrix();
+}
+
+//=======================================================================
 // Display Function
 //=======================================================================
 
@@ -313,8 +334,20 @@ void myDisplay(void)
 	glPopMatrix();
 
 
+	
+
+
 	glPushMatrix(); //scenes
 		glTranslated(ground, 0, ground);
+
+		//obstacles
+		glPushMatrix();
+		for (double i = 0; i < 530; i+=50){
+			draw_road_cone(i, LEFT_LANE);
+			draw_road_cone(i+25, RIGHT_LANE);
+		}
+		glPopMatrix();
+
 		//drawing Beach env
 		for (int i = 0; i < 5; i++){
 			glPushMatrix();
@@ -719,6 +752,7 @@ void LoadAssets()
 	model_tree.Load("Models/tree/Tree1.3ds");
 	model_car.Load("Models/car/MURCIELAGO640.3ds");
 	model_umbrella.Load("Models/umbrella/Umbrella N040608.3ds");
+	model_road_cone.Load("Models/road_cone.3ds");
 
 	// Loading texture files
 	tex_city.Load("Textures/city.bmp");
