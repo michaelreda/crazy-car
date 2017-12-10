@@ -316,7 +316,7 @@ void draw_barrel(double distance, int lane){
 //=======================================================================
 // Display Function
 //=======================================================================
-
+int level = 2;
 int rand_trees_num = rand() % 2 +2;
 int car_status = 5;
 void myDisplay(void)
@@ -340,6 +340,14 @@ void myDisplay(void)
 		drawBitmapText(timestr, Eye.x + 10, 0, Eye.z + 10); // moves with the camera
 	glPopMatrix();
 
+	//draw Level
+	glPushMatrix();
+		//glColor3d(1, 1, 1);
+		char levelstr[512];
+		sprintf(levelstr, "Level: %d", level);//converts double to string
+		drawBitmapText(levelstr, 540, 0, 540-40); // moves with the camera
+	glPopMatrix();
+
 
 	//draw Car Status
 	glPushMatrix();
@@ -356,6 +364,8 @@ void myDisplay(void)
 
 	glPushMatrix(); //scenes
 		glTranslated(ground, 0, ground);
+
+
 
 		//obstacles
 		glPushMatrix();
@@ -634,8 +644,11 @@ void myDisplay(void)
 //=======================================================================
 void ground_motion(int val)//timer animation function, allows the user to pass an integer valu to the timer function.
 {
-	if (ground < -535)
+	if (ground < -535){
 		ground = 0;
+		level++;
+		glutTimerFunc(50, ground_motion, 0);
+	}
 
 	ground -= 1;
 
