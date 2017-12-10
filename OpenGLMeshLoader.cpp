@@ -422,6 +422,8 @@ void myDisplay(void)
 			glPopMatrix();
 
 
+			
+
 			glPopMatrix();
 
 		}
@@ -505,6 +507,27 @@ void myDisplay(void)
 					drawWall(0.02, tex_street, 1);//street
 				glPopMatrix();
 
+
+				//drawing buldings
+				glPushMatrix();
+					glTranslated(i * 32, 0, i * 32);
+					glPushMatrix();
+						glTranslated(15, 0, 0);//bring building left of the road
+						glScaled(1, ((int)(i + 2) % 3) + 1, 1);
+						glScaled(1, 0.5, 1);
+						glScaled(0.05, 0.05, 0.05);
+						glRotated(-45, 0, 1, 0);
+						model_building.Draw();
+					glPopMatrix();
+					glPushMatrix();
+						glTranslated(15, 0, 30);//bring building right of the road
+						glScaled(1, ((int)i % 3) + 1, 1);
+						glScaled(1, 0.5, 1);
+						glScaled(0.05, 0.05, 0.05);
+						glRotated(-45, 0, 1, 0);
+						model_building.Draw();
+					glPopMatrix();
+				glPopMatrix();
 
 
 			glPopMatrix();
@@ -776,7 +799,7 @@ void LoadAssets()
 	model_umbrella.Load("Models/umbrella/Umbrella N040608.3ds");
 	model_road_cone.Load("Models/road_cone.3ds");
 	model_barrel.Load("Models/barrel.3ds");
-	model_building.Load("Models/building.3ds");
+	model_building.Load("Models/skyA.3ds");
 
 	// Loading texture files
 	tex_city.Load("Textures/city.bmp");
