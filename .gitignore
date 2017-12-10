@@ -1,6 +1,9 @@
 # Prerequisites
 *.d
 
+*.sdf
+*.suo
+
 /Debug
 
 # Compiled Object files

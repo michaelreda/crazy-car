@@ -6,14 +6,19 @@
 int WIDTH = 1280;
 int HEIGHT = 720;
 
+
+double time = 0;
+
+
 GLuint tex;
+GLuint tex_boat;
 char title[] = "3D Model Loader Sample";
 
 // 3D Projection Options
 GLdouble fovy = 45.0;
 GLdouble aspectRatio = (GLdouble)WIDTH / (GLdouble)HEIGHT;
 GLdouble zNear = 0.1;
-GLdouble zFar = 100;
+GLdouble zFar = 1600;
 
 class Vector
 {
@@ -33,20 +38,28 @@ public:
 	}
 };
 
-Vector Eye(20, 5, 20);
-Vector At(0, 0, 0);
+Vector Eye(-20, 5, -20);
+Vector At(zFar, 0, zFar);
 Vector Up(0, 1, 0);
 
 int cameraZoom = 0;
 
 // Model Variables
 Model_3DS model_house;
+Model_3DS model_boat;
 Model_3DS model_tree;
 Model_3DS model_car;
+Model_3DS model_umbrella;
 
 // Textures
-GLTexture tex_ground;
+GLTexture tex_farm;
+GLTexture tex_city;
+GLTexture tex_beach;
+GLTexture tex_beach_street;
 GLTexture tex_street;
+
+//variables
+double ground;
 
 //=======================================================================
 // Lighting Configuration Function
@@ -139,7 +152,7 @@ void myInit(void)
 //=======================================================================
 // Render Ground Function
 //=======================================================================
-void RenderGround()
+void RenderGround(GLTexture groundTex)
 {
 	glDisable(GL_LIGHTING);	// Disable lighting 
 
@@ -147,7 +160,7 @@ void RenderGround()
 
 	glEnable(GL_TEXTURE_2D);	// Enable 2D texturing
 
-	glBindTexture(GL_TEXTURE_2D, tex_ground.texture[0]);	// Bind the ground texture
+	glBindTexture(GL_TEXTURE_2D, groundTex.texture[0]);	// Bind the ground texture
 
 	glPushMatrix();
 	glBegin(GL_QUADS);
@@ -250,9 +263,24 @@ void drawWall(double thickness, GLTexture texture, double texture_width) {
 	glPopMatrix();
 }
 
+//text function
+void drawBitmapText(char *string, float x, float y, float z)
+{
+	char *c;
+	glRasterPos3f(x, y,z);
+
+	for (c = string; *c != '\0'; c++)
+	{
+		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);
+	}
+}
+
 //=======================================================================
 // Display Function
 //=======================================================================
+
+int rand_trees_num = rand() % 2 +2;
+int car_status = 5;
 void myDisplay(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -264,44 +292,241 @@ void myDisplay(void)
 	glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
 	glLightfv(GL_LIGHT0, GL_AMBIENT, lightIntensity);
 
-	// Draw Ground
+	//draw Time
 	glPushMatrix();
-	glRotated(45, 0, 1, 0);
-		RenderGround();
+		//glColor3d(1, 1, 1);
+		glTranslated(-5.5, 0, 5.5);//place it right
+		char timestr[512];
+		sprintf(timestr, "Time: %g s", time);//converts double to string
+		//sprintf(timestr, "Ground: %g s", ground);//converts double to string
+		drawBitmapText(timestr, Eye.x + 10, 0, Eye.z + 10); // moves with the camera
 	glPopMatrix();
 
 
-	//draw Street
+	//draw Car Status
 	glPushMatrix();
-		glRotated(45, 0, 1, 0);
-		glScaled(7, 1, 40);
-		glTranslated(-0.5, 0, -0.5);
-		drawWall(0.02, tex_street,1);//street
+		//glColor3d(1, 1, 1);
+		glTranslated(5.5, 0, -5.5);//place it right
+		char statusStr[512];
+		sprintf(statusStr, "Car Status: %d", car_status);//converts double to string
+		drawBitmapText(statusStr, Eye.x + 10, 0, Eye.z + 10); // moves with the camera
 	glPopMatrix();
+
+
+	glPushMatrix(); //scenes
+		glTranslated(ground, 0, ground);
+		//drawing Beach env
+		for (int i = 0; i < 5; i++){
+			glPushMatrix();
+
+			// Draw Ground
+			glPushMatrix();
+				glRotated(45, 0, 1, 0);
+				glTranslated(0, 0, i * 50);
+				glScaled(1.3, 1, 2);
+				RenderGround(tex_beach);
+			glPopMatrix();
+
+
+			//draw Street
+			for (double j = -0.6; j < 1.6; j++){
+				glPushMatrix();
+					glRotated(45, 0, 1, 0);
+					glTranslated(0, 0,j*20 + i * 50);
+					glScaled(1, 1, 2);
+					glScaled(7, 1, 10);
+					glTranslated(-0.5, 0, -0.5);
+					drawWall(0.02, tex_beach_street, 1);//street
+				glPopMatrix();
+			}
+		
+
+
+			for (int j = 0; j < rand_trees_num; j++){
+				// Draw umbrella Model
+				glPushMatrix();
+				glTranslated(i * 40 + -j * 10, 0, i * 40 + -j * 10);
+				if (j % 2 == 1)
+					glTranslatef(-10, 0, 0);//bring it right
+				else
+					glTranslatef(10, 0, 0);//bring it right
+
+				glTranslatef(0, 2, 0);
+				glScalef(50, 50, 50);
+				model_umbrella.Draw();
+				glPopMatrix();
+			}
+
+
+			// Draw boat Model
+			glPushMatrix();
+				glTranslated(i * 30, 0, i * 30);
+				glTranslated(10, 0, 0);//bring house left of the road
+				glScaled(0.5, 0.5, 0.5);
+				model_boat.Draw();
+			glPopMatrix();
+
+
+			glPopMatrix();
+
+		}
+
+		//drawing Farm env
+		for (double i = 5.6; i < 9.6; i+=1.6){
+			glPushMatrix();
+		
+				// Draw Ground
+				glPushMatrix();
+					glRotated(45, 0, 1, 0);
+					glTranslated(0, 0, i * 50);
+					glScaled(1.3, 1, 2);
+					RenderGround(tex_farm);
+				glPopMatrix();
+
+
+				//draw Street
+				glPushMatrix();
+					glRotated(45, 0, 1, 0);
+					glTranslated(0, 0, i * 50);
+					glScaled(1, 1, 2);
+					glScaled(7, 1, 40);
+					glTranslated(-0.5, 0, -0.5);
+					drawWall(0.02, tex_street, 1);//street
+				glPopMatrix();
+
+
+				for (int j = 0; j < rand_trees_num; j++){
+					// Draw Tree Model
+					glPushMatrix();
+						glTranslated(i * 35 + -j * 10, 0, i * 35 + -j * 10);
+						if (j%2 == 1)
+							glTranslatef(-7, 0, 0);//bring it right
+						else
+							glTranslatef(7, 0, 0);//bring it right
+						glScalef(0.7, 0.7, 0.7);
+						model_tree.Draw();
+					glPopMatrix();
+				}
+			
+
+				// Draw house Model
+				glPushMatrix();
+					glTranslated(i * 30, 0, i * 30);
+					glTranslated(10, 0, 0);//bring house left of the road
+					glRotatef(250.f, 0, 1, 0);
+					glRotatef(90.f, 1, 0, 0);
+					glTranslated(0, -8, 0);
+					model_house.Draw();
+				glPopMatrix();
+
+
+			glPopMatrix();
+
+		}
+
+
+
+
+		//drawing City env
+		for (double i = 10.3; i < 15.3; i+=1.3){
+			glPushMatrix();
+		
+				// Draw Ground
+				glPushMatrix();
+					glRotated(45, 0, 1, 0);
+					glTranslated(0, 0, i * 50);
+					glScaled(1.3, 1, 2);
+					RenderGround(tex_city);
+				glPopMatrix();
+
+
+				//draw Street
+				glPushMatrix();
+					glRotated(45, 0, 1, 0);
+					glTranslated(0, 0, i * 50);
+					glScaled(1, 1, 2);
+					glScaled(7, 1, 40);
+					glTranslated(-0.5, 0, -0.5);
+					drawWall(0.02, tex_street, 1);//street
+				glPopMatrix();
+
+
+
+			glPopMatrix();
+
+		}
+
+		////drawing last Beach env
+		//for (double i = 15.8; i < 18; i++){
+		//	glPushMatrix();
+
+		//	// Draw Ground
+		//	glPushMatrix();
+		//		glRotated(45, 0, 1, 0);
+		//		glTranslated(0, 0, i * 50);
+		//		glScaled(1.3, 1, 2);
+		//		RenderGround(tex_beach);
+		//	glPopMatrix();
+
+
+		//	//draw Street
+		//	for (double j = -0.6; j < 1.6; j++){
+		//		glPushMatrix();
+		//			glRotated(45, 0, 1, 0);
+		//			glTranslated(0, 0,j*20 + i * 50);
+		//			glScaled(1, 1, 2);
+		//			glScaled(7, 1, 10);
+		//			glTranslated(-0.5, 0, -0.5);
+		//			drawWall(0.02, tex_beach_street, 1);//street
+		//		glPopMatrix();
+		//	}
+		//
+
+
+		//	for (int j = 0; j < rand_trees_num; j++){
+		//		// Draw umbrella Model
+		//		glPushMatrix();
+		//		glTranslated(i * 40 + -j * 10, 0, i * 40 + -j * 10);
+		//		if (j % 2 == 1)
+		//			glTranslatef(-10, 0, 0);//bring it right
+		//		else
+		//			glTranslatef(10, 0, 0);//bring it right
+
+		//		glTranslatef(0, 2, 0);
+		//		glScalef(50, 50, 50);
+		//		model_umbrella.Draw();
+		//		glPopMatrix();
+		//	}
+
+
+		//	// Draw boat Model
+		//	glPushMatrix();
+		//		glTranslated(i * 30, 0, i * 30);
+		//		glTranslated(10, 0, 0);//bring house left of the road
+		//		glScaled(0.5, 0.5, 0.5);
+		//		model_boat.Draw();
+		//	glPopMatrix();
+
+
+		//	glPopMatrix();
+
+		//}
+
+
+	glPopMatrix(); //scenes
+
+
 
 	// Draw car Model
 	glPushMatrix();
-	glTranslatef(0, 0, 0);
-	//glScalef(0.3, 0.3, 0.3);
-	//glScalef(0.1, 0.1, 0.1);
-	glRotated(-45, 0, 1, 0);
-	model_car.Draw();
+		glTranslatef(0, 0, 0);
+		//glScalef(0.3, 0.3, 0.3);
+		//glScalef(0.1, 0.1, 0.1);
+		glRotated(-45, 0, 1, 0);
+		model_car.Draw();
 	glPopMatrix();
 
-	// Draw Tree Model
-	glPushMatrix();
-	glTranslatef(-7, 0, 0);
-	glScalef(0.7, 0.7, 0.7);
-	model_tree.Draw();
-	glPopMatrix();
-
-	// Draw house Model
-	glPushMatrix();
-	glRotatef(-25.f, 0, 1, 0);
-	glRotatef(90.f, 1, 0, 0);
-	glTranslated(0, -8, 0);
-	model_house.Draw();
-	glPopMatrix();
+	
 
 
 //sky box
@@ -309,12 +534,13 @@ void myDisplay(void)
 
 	GLUquadricObj * qobj;
 	qobj = gluNewQuadric();
-	glTranslated(50,0,0);
+	//glTranslated(50,0,0);
+	glRotated(180, 0, 1, 0);
 	glRotated(90,1,0,1);
 	glBindTexture(GL_TEXTURE_2D, tex);
 	gluQuadricTexture(qobj,true);
 	gluQuadricNormals(qobj,GL_SMOOTH);
-	gluSphere(qobj,100,100,100);
+	gluSphere(qobj,zFar/2,100,100);
 	gluDeleteQuadric(qobj);
 	
 	
@@ -326,16 +552,81 @@ void myDisplay(void)
 }
 
 //=======================================================================
+// ground animation Function
+//=======================================================================
+void ground_motion(int val)//timer animation function, allows the user to pass an integer valu to the timer function.
+{
+	if (ground < -535)
+		ground = 0;
+
+	ground -= 1;
+
+	glutPostRedisplay();						// redraw 		
+	glutTimerFunc(50, ground_motion, 0);					//recall the time function after 1000 ms and pass a zero value as an input to the time func.
+}
+
+//=======================================================================
+// camera animation Function
+//=======================================================================
+void camera_motion(int val)//timer animation function, allows the user to pass an integer valu to the timer function.
+{
+	if (Eye.x > zFar)
+		return;
+
+	Eye.x += 0.2;
+	Eye.z += 0.2;
+
+	glLoadIdentity();	//Clear Model_View Matrix
+
+	glLoadIdentity();	//Clear Model_View Matrix
+
+	gluLookAt(Eye.x, Eye.y, Eye.z, At.x, At.y, At.z, Up.x, Up.y, Up.z);	//Setup Camera with modified paramters
+
+	GLfloat light_position[] = { 0.0f, 10.0f, 0.0f, 1.0f };
+	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+
+	glutPostRedisplay();						// redraw 		
+	glutTimerFunc(50, camera_motion, 0);					//recall the time function after 1000 ms and pass a zero value as an input to the time func.
+}
+
+
+void reset_camera_position(){
+	Eye.x = -20;
+	Eye.z = -20;
+
+	glLoadIdentity();	//Clear Model_View Matrix
+
+	glLoadIdentity();	//Clear Model_View Matrix
+
+	gluLookAt(Eye.x, Eye.y, Eye.z, At.x, At.y, At.z, Up.x, Up.y, Up.z);	//Setup Camera with modified paramters
+
+	GLfloat light_position[] = { 0.0f, 10.0f, 0.0f, 1.0f };
+	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+
+	glutPostRedisplay();
+}
+
+//=======================================================================
 // Keyboard Function
 //=======================================================================
 void myKeyboard(unsigned char button, int x, int y)
 {
 	switch (button)
 	{
+
+	case 'g':
+		glutTimerFunc(0, ground_motion, 0);
+		break;
+	case 'c':
+		glutTimerFunc(0, camera_motion, 0);
+		break;
+	case 'r':
+		reset_camera_position();
+		break;
 	case 'w':
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		break;
-	case 'r':
+	case 'b':
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		break;
 	case 27:
@@ -424,14 +715,35 @@ void LoadAssets()
 {
 	// Loading Model files
 	model_house.Load("Models/house/house.3DS");
+	model_boat.Load("Models/boat/Cannoe.3ds");
 	model_tree.Load("Models/tree/Tree1.3ds");
 	model_car.Load("Models/car/MURCIELAGO640.3ds");
+	model_umbrella.Load("Models/umbrella/Umbrella N040608.3ds");
 
 	// Loading texture files
-	tex_ground.Load("Textures/ground.bmp");
+	tex_city.Load("Textures/city.bmp");
+	tex_farm.Load("Textures/ground.bmp");
+	tex_beach.Load("Textures/beach.bmp");
 	tex_street.Load("Textures/street.bmp");
+	tex_beach_street.Load("Textures/beach_street.bmp");
 	loadBMP(&tex, "Textures/sky4-jpg.bmp", true);
+	loadBMP(&tex_boat, "Models/boat/Might be wood.bmp", true);
 }
+
+//=======================================================================
+// Animation Functions
+//=======================================================================
+
+
+void time_counter(int val)//timer animation function, allows the user to pass an integer valu to the timer function.
+{
+	time += 0.1;
+
+	glutPostRedisplay();						// redraw 		
+	glutTimerFunc(100, time_counter, 0);					//recall the time function after 1000 ms and pass a zero value as an input to the time func.
+}
+
+
 
 //=======================================================================
 // Main Function
@@ -457,6 +769,9 @@ void main(int argc, char** argv)
 	glutMouseFunc(myMouse);
 
 	glutReshapeFunc(myReshape);
+
+
+	glutTimerFunc(0, time_counter, 0);
 
 	myInit();
 
