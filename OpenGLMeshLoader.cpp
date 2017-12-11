@@ -10,6 +10,9 @@ int HEIGHT = 720;
 double time = 0;
 
 
+#define LEFT_LANE 0
+#define RIGHT_LANE 1
+
 GLuint tex;
 GLuint tex_boat;
 char title[] = "3D Model Loader Sample";
@@ -50,6 +53,9 @@ Model_3DS model_boat;
 Model_3DS model_tree;
 Model_3DS model_car;
 Model_3DS model_umbrella;
+Model_3DS model_road_cone;
+Model_3DS model_barrel;
+Model_3DS model_building;
 
 // Textures
 GLTexture tex_farm;
@@ -276,9 +282,41 @@ void drawBitmapText(char *string, float x, float y, float z)
 }
 
 //=======================================================================
+// Obtacles
+//=======================================================================
+void draw_road_cone(double distance, int lane){
+	glPushMatrix();
+		glTranslated(distance, 0, distance);
+		if (lane == LEFT_LANE){
+			glTranslated(2, 0, 0);//bring house left of the road
+		}
+		else if (lane == RIGHT_LANE){
+			glTranslated(-2, 0, 0);//bring house left of the road
+		}
+		glScaled(0.03, 0.03, 0.03);
+		model_road_cone.Draw();
+	glPopMatrix();
+}
+
+void draw_barrel(double distance, int lane){
+	glPushMatrix();
+		glTranslated(distance, 0, distance);
+		if (lane == LEFT_LANE){
+			glTranslated(2, 0, 0);//bring house left of the road
+		}
+		else if (lane == RIGHT_LANE){
+			glTranslated(-2, 0, 0);//bring house left of the road
+		}
+		//glTranslated(0, -3, 0);
+		glScaled(0.02, 0.02, 0.02);
+		model_barrel.Draw();
+	glPopMatrix();
+}
+
+//=======================================================================
 // Display Function
 //=======================================================================
-
+int level = 2;
 int rand_trees_num = rand() % 2 +2;
 int car_status = 5;
 void myDisplay(void)
@@ -302,6 +340,14 @@ void myDisplay(void)
 		drawBitmapText(timestr, Eye.x + 10, 0, Eye.z + 10); // moves with the camera
 	glPopMatrix();
 
+	//draw Level
+	glPushMatrix();
+		//glColor3d(1, 1, 1);
+		char levelstr[512];
+		sprintf(levelstr, "Level: %d", level);//converts double to string
+		drawBitmapText(levelstr, 540, 0, 540-40); // moves with the camera
+	glPopMatrix();
+
 
 	//draw Car Status
 	glPushMatrix();
@@ -313,8 +359,27 @@ void myDisplay(void)
 	glPopMatrix();
 
 
+	
+
+
 	glPushMatrix(); //scenes
 		glTranslated(ground, 0, ground);
+
+
+
+		//obstacles
+		glPushMatrix();
+		for (double i = 50; i < 530; i+=200){
+			draw_road_cone(i, LEFT_LANE);
+			draw_road_cone(i+100, RIGHT_LANE);
+		}
+
+		for (double i = 0; i < 530; i += 200){
+			draw_barrel(i, LEFT_LANE);
+			draw_barrel(i + 100, RIGHT_LANE);
+		}
+		glPopMatrix();
+
 		//drawing Beach env
 		for (int i = 0; i < 5; i++){
 			glPushMatrix();
@@ -366,6 +431,8 @@ void myDisplay(void)
 				model_boat.Draw();
 			glPopMatrix();
 
+
+			
 
 			glPopMatrix();
 
@@ -450,6 +517,27 @@ void myDisplay(void)
 					drawWall(0.02, tex_street, 1);//street
 				glPopMatrix();
 
+
+				//drawing buldings
+				glPushMatrix();
+					glTranslated(i * 32, 0, i * 32);
+					glPushMatrix();
+						glTranslated(15, 0, 0);//bring building left of the road
+						glScaled(1, ((int)(i + 2) % 3) + 1, 1);
+						glScaled(1, 0.5, 1);
+						glScaled(0.05, 0.05, 0.05);
+						glRotated(-45, 0, 1, 0);
+						model_building.Draw();
+					glPopMatrix();
+					glPushMatrix();
+						glTranslated(15, 0, 30);//bring building right of the road
+						glScaled(1, ((int)i % 3) + 1, 1);
+						glScaled(1, 0.5, 1);
+						glScaled(0.05, 0.05, 0.05);
+						glRotated(-45, 0, 1, 0);
+						model_building.Draw();
+					glPopMatrix();
+				glPopMatrix();
 
 
 			glPopMatrix();
@@ -556,8 +644,11 @@ void myDisplay(void)
 //=======================================================================
 void ground_motion(int val)//timer animation function, allows the user to pass an integer valu to the timer function.
 {
-	if (ground < -535)
+	if (ground < -535){
 		ground = 0;
+		level++;
+		glutTimerFunc(50, ground_motion, 0);
+	}
 
 	ground -= 1;
 
@@ -719,6 +810,9 @@ void LoadAssets()
 	model_tree.Load("Models/tree/Tree1.3ds");
 	model_car.Load("Models/car/MURCIELAGO640.3ds");
 	model_umbrella.Load("Models/umbrella/Umbrella N040608.3ds");
+	model_road_cone.Load("Models/road_cone.3ds");
+	model_barrel.Load("Models/barrel.3ds");
+	model_building.Load("Models/skyA.3ds");
 
 	// Loading texture files
 	tex_city.Load("Textures/city.bmp");
