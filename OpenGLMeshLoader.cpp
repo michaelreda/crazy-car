@@ -346,7 +346,7 @@ void draw_barrel(double distance, int lane){
 		glTranslated(-9, 0, 0);//bring house left of the road
 		obstacles_x[obstacles_index] = distance - 9;
 	}
-	//glTranslated(0, -3, 0);
+	glTranslated(0, -1, 0);
 	glScaled(0.02, 0.02, 0.02);
 	model_barrel.Draw();
 	glPopMatrix();
