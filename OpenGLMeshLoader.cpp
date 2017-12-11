@@ -2,7 +2,7 @@
 #include "Model_3DS.h"
 #include "GLTexture.h"
 #include <glut.h>
-
+#include "Car.h"
 int WIDTH = 1280;
 int HEIGHT = 720;
 
@@ -12,6 +12,7 @@ double time = 0;
 
 #define LEFT_LANE 0
 #define RIGHT_LANE 1
+
 
 GLuint tex;
 GLuint tex_boat;
@@ -41,7 +42,7 @@ public:
 	}
 };
 
-Vector Eye(-20, 5, -20);
+Vector Eye(-20, 5, -10);
 Vector At(zFar, 0, zFar);
 Vector Up(0, 1, 0);
 
@@ -52,6 +53,7 @@ Model_3DS model_house;
 Model_3DS model_boat;
 Model_3DS model_tree;
 Model_3DS model_car;
+Model_3DS model_wheel;
 Model_3DS model_umbrella;
 Model_3DS model_road_cone;
 Model_3DS model_barrel;
@@ -66,6 +68,12 @@ GLTexture tex_street;
 
 //variables
 double ground;
+
+#define MAX_SPEED 4.0f
+#define ROTATION_MULTIPLIER 8.0f
+#define DRAG 0.18f
+Car car;
+float speed = 0;
 
 //=======================================================================
 // Lighting Configuration Function
@@ -607,11 +615,9 @@ void myDisplay(void)
 
 	// Draw car Model
 	glPushMatrix();
-		glTranslatef(0, 0, 0);
-		//glScalef(0.3, 0.3, 0.3);
-		//glScalef(0.1, 0.1, 0.1);
-		glRotated(-45, 0, 1, 0);
-		model_car.Draw();
+		glScalef(0.5f, 0.5f, 0.5f);
+		glRotated(45, 0, 1, 0);
+		car.drawCar();
 	glPopMatrix();
 
 	
@@ -644,13 +650,20 @@ void myDisplay(void)
 //=======================================================================
 void ground_motion(int val)//timer animation function, allows the user to pass an integer valu to the timer function.
 {
+	speed -= DRAG;
+	if (speed < 0.0f)
+		speed = 0.0f;
+	else
+	{
+		car.setWheelRotation(car.getWheelRotation() + speed*ROTATION_MULTIPLIER);
+	}
 	if (ground < -535){
 		ground = 0;
 		level++;
-		glutTimerFunc(50, ground_motion, 0);
+		//glutTimerFunc(50, ground_motion, 0);
 	}
 
-	ground -= 1;
+	ground -= speed;
 
 	glutPostRedisplay();						// redraw 		
 	glutTimerFunc(50, ground_motion, 0);					//recall the time function after 1000 ms and pass a zero value as an input to the time func.
@@ -808,11 +821,13 @@ void LoadAssets()
 	model_house.Load("Models/house/house.3DS");
 	model_boat.Load("Models/boat/Cannoe.3ds");
 	model_tree.Load("Models/tree/Tree1.3ds");
-	model_car.Load("Models/car/MURCIELAGO640.3ds");
 	model_umbrella.Load("Models/umbrella/Umbrella N040608.3ds");
 	model_road_cone.Load("Models/road_cone.3ds");
 	model_barrel.Load("Models/barrel.3ds");
 	model_building.Load("Models/skyA.3ds");
+	model_car.Load("Models/car/car2.3ds");
+	model_wheel.Load("Models/wheel/wheel4.3ds");
+	car = Car(model_car, model_wheel, 3.0f, 0.082f);
 
 	// Loading texture files
 	tex_city.Load("Textures/city.bmp");
@@ -838,7 +853,36 @@ void time_counter(int val)//timer animation function, allows the user to pass an
 }
 
 
+void SpecialInput(int key, int x, int y)
+{
+	switch (key)
+	{
+	case GLUT_KEY_UP:
+		{
+			if (speed < MAX_SPEED)
+				speed += 1.0f;
+		}
+	break;
+	case GLUT_KEY_DOWN:
+	{
+		speed -= 1.5f;
+		if (speed < 0)
+			speed = 0.0f;
+	}
+	break;
+	case GLUT_KEY_LEFT:
+		//do something here
+		break;
+	case GLUT_KEY_RIGHT:
+		//do something here
+		break;
+	}
 
+	glutPostRedisplay();
+}
+void keyDownFunc(int in)
+{
+}
 //=======================================================================
 // Main Function
 //=======================================================================
@@ -864,9 +908,10 @@ void main(int argc, char** argv)
 
 	glutReshapeFunc(myReshape);
 
+	glutSpecialFunc(SpecialInput);
 
 	glutTimerFunc(0, time_counter, 0);
-
+	glutTimerFunc(50, ground_motion, 0);
 	myInit();
 
 	LoadAssets();
