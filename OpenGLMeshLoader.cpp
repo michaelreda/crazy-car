@@ -9,9 +9,12 @@ int HEIGHT = 720;
 
 double time = 0;
 
+int* lanes_random_number = new int[20];
 
-#define LEFT_LANE 0
-#define RIGHT_LANE 1
+#define CENTER_LEFT_LANE 0
+#define LEFT_LANE 1
+#define CENTER_RIGHT_LANE 2
+#define RIGHT_LANE 3
 
 
 GLuint tex;
@@ -281,7 +284,7 @@ void drawWall(double thickness, GLTexture texture, double texture_width) {
 void drawBitmapText(char *string, float x, float y, float z)
 {
 	char *c;
-	glRasterPos3f(x, y,z);
+	glRasterPos3f(x, y, z);
 
 	for (c = string; *c != '\0'; c++)
 	{
@@ -294,30 +297,42 @@ void drawBitmapText(char *string, float x, float y, float z)
 //=======================================================================
 void draw_road_cone(double distance, int lane){
 	glPushMatrix();
-		glTranslated(distance, 0, distance);
-		if (lane == LEFT_LANE){
-			glTranslated(2, 0, 0);//bring house left of the road
-		}
-		else if (lane == RIGHT_LANE){
-			glTranslated(-2, 0, 0);//bring house left of the road
-		}
-		glScaled(0.03, 0.03, 0.03);
-		model_road_cone.Draw();
+	glTranslated(distance, 0, distance);
+	if (lane == LEFT_LANE){
+		glTranslated(8, 0, 0);//bring house left of the road
+	}
+	else if (lane == CENTER_LEFT_LANE){
+		glTranslated(3, 0, 0);//bring house left of the road
+	}
+	else if (lane == CENTER_RIGHT_LANE){
+		glTranslated(-3, 0, 0);//bring house left of the road
+	}
+	else if (lane == RIGHT_LANE){
+		glTranslated(-8, 0, 0);//bring house left of the road
+	}
+	glScaled(0.03, 0.03, 0.03);
+	model_road_cone.Draw();
 	glPopMatrix();
 }
 
 void draw_barrel(double distance, int lane){
 	glPushMatrix();
-		glTranslated(distance, 0, distance);
-		if (lane == LEFT_LANE){
-			glTranslated(2, 0, 0);//bring house left of the road
-		}
-		else if (lane == RIGHT_LANE){
-			glTranslated(-2, 0, 0);//bring house left of the road
-		}
-		//glTranslated(0, -3, 0);
-		glScaled(0.02, 0.02, 0.02);
-		model_barrel.Draw();
+	glTranslated(distance, 0, distance);
+	if (lane == LEFT_LANE){
+		glTranslated(5, 0, 0);//bring house left of the road
+	}
+	else if (lane == CENTER_LEFT_LANE){
+		glTranslated(1, 0, 0);//bring house left of the road
+	}
+	else if (lane == CENTER_RIGHT_LANE){
+		glTranslated(-4, 0, 0);//bring house left of the road
+	}
+	else if (lane == RIGHT_LANE){
+		glTranslated(-9, 0, 0);//bring house left of the road
+	}
+	//glTranslated(0, -3, 0);
+	glScaled(0.02, 0.02, 0.02);
+	model_barrel.Draw();
 	glPopMatrix();
 }
 
@@ -325,7 +340,7 @@ void draw_barrel(double distance, int lane){
 // Display Function
 //=======================================================================
 int level = 2;
-int rand_trees_num = rand() % 2 +2;
+int rand_trees_num = rand() % 2 + 2;
 int car_status = 5;
 void myDisplay(void)
 {
@@ -334,279 +349,283 @@ void myDisplay(void)
 
 
 	GLfloat lightIntensity[] = { 0.7, 0.7, 0.7, 1.0f };
-	GLfloat lightPosition[] = {0.0f, 100.0f, 0.0f, 0.0f };
+	GLfloat lightPosition[] = { 0.0f, 100.0f, 0.0f, 0.0f };
 	glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
 	glLightfv(GL_LIGHT0, GL_AMBIENT, lightIntensity);
 
 	//draw Time
 	glPushMatrix();
-		//glColor3d(1, 1, 1);
-		glTranslated(-5.5, 0, 5.5);//place it right
-		char timestr[512];
-		sprintf(timestr, "Time: %g s", time);//converts double to string
-		//sprintf(timestr, "Ground: %g s", ground);//converts double to string
-		drawBitmapText(timestr, Eye.x + 10, 0, Eye.z + 10); // moves with the camera
+	//glColor3d(1, 1, 1);
+	glTranslated(-5.5, 0, 5.5);//place it right
+	char timestr[512];
+	sprintf(timestr, "Time: %g s", time);//converts double to string
+	//sprintf(timestr, "Ground: %g s", ground);//converts double to string
+	drawBitmapText(timestr, Eye.x + 10, 0, Eye.z + 10); // moves with the camera
 	glPopMatrix();
 
 	//draw Level
 	glPushMatrix();
-		//glColor3d(1, 1, 1);
-		char levelstr[512];
-		sprintf(levelstr, "Level: %d", level);//converts double to string
-		drawBitmapText(levelstr, 540, 0, 540-40); // moves with the camera
+	//glColor3d(1, 1, 1);
+	char levelstr[512];
+	sprintf(levelstr, "Level: %d", level);//converts double to string
+	drawBitmapText(levelstr, 540, 0, 540 - 40); // moves with the camera
 	glPopMatrix();
 
 
 	//draw Car Status
 	glPushMatrix();
-		//glColor3d(1, 1, 1);
-		glTranslated(5.5, 0, -5.5);//place it right
-		char statusStr[512];
-		sprintf(statusStr, "Car Status: %d", car_status);//converts double to string
-		drawBitmapText(statusStr, Eye.x + 10, 0, Eye.z + 10); // moves with the camera
+	//glColor3d(1, 1, 1);
+	glTranslated(5.5, 0, -5.5);//place it right
+	char statusStr[512];
+	sprintf(statusStr, "Car Status: %d Car Speed: %d Km/h", car_status, (int)speed * 10);//converts double to string
+	drawBitmapText(statusStr, Eye.x + 10, 0, Eye.z + 10); // moves with the camera
 	glPopMatrix();
 
 
-	
+
 
 
 	glPushMatrix(); //scenes
-		glTranslated(ground, 0, ground);
+	glTranslated(ground, 0, ground);
 
 
 
-		//obstacles
+	//obstacles
+	glPushMatrix();
+	for (double i = 50; i < 530; i += 200 / level){
+		/*draw_road_cone(i, LEFT_LANE);
+		draw_road_cone(i+100, RIGHT_LANE);
+		draw_road_cone(i, CENTER_LEFT_LANE);
+		draw_road_cone(i + 100, CENTER_RIGHT_LANE);*/
+		draw_road_cone(i, lanes_random_number[(int)i % 20]);
+	}
+
+	for (double i = 0; i < 530; i += 250 / level){
+		/*draw_barrel(i, LEFT_LANE);
+		draw_barrel(i + 100, RIGHT_LANE);*/
+		draw_barrel(i, lanes_random_number[(int)i % 19 + 1]);
+	}
+	glPopMatrix();
+
+	//drawing Beach env
+	for (int i = 0; i < 5; i++){
 		glPushMatrix();
-		for (double i = 50; i < 530; i+=200){
-			draw_road_cone(i, LEFT_LANE);
-			draw_road_cone(i+100, RIGHT_LANE);
-		}
 
-		for (double i = 0; i < 530; i += 200){
-			draw_barrel(i, LEFT_LANE);
-			draw_barrel(i + 100, RIGHT_LANE);
-		}
+		// Draw Ground
+		glPushMatrix();
+		glRotated(45, 0, 1, 0);
+		glTranslated(0, 0, i * 50);
+		glScaled(1.3, 1, 2);
+		RenderGround(tex_beach);
 		glPopMatrix();
 
-		//drawing Beach env
-		for (int i = 0; i < 5; i++){
+
+		//draw Street
+		for (double j = -0.6; j < 1.6; j++){
 			glPushMatrix();
-
-			// Draw Ground
-			glPushMatrix();
-				glRotated(45, 0, 1, 0);
-				glTranslated(0, 0, i * 50);
-				glScaled(1.3, 1, 2);
-				RenderGround(tex_beach);
+			glRotated(45, 0, 1, 0);
+			glTranslated(0, 0, j * 20 + i * 50);
+			glScaled(2.5, 1, 2);
+			glScaled(7, 1, 10);
+			glTranslated(-0.5, 0, -0.5);
+			drawWall(0.02, tex_beach_street, 1);//street
 			glPopMatrix();
-
-
-			//draw Street
-			for (double j = -0.6; j < 1.6; j++){
-				glPushMatrix();
-					glRotated(45, 0, 1, 0);
-					glTranslated(0, 0,j*20 + i * 50);
-					glScaled(1, 1, 2);
-					glScaled(7, 1, 10);
-					glTranslated(-0.5, 0, -0.5);
-					drawWall(0.02, tex_beach_street, 1);//street
-				glPopMatrix();
-			}
-		
-
-
-			for (int j = 0; j < rand_trees_num; j++){
-				// Draw umbrella Model
-				glPushMatrix();
-				glTranslated(i * 40 + -j * 10, 0, i * 40 + -j * 10);
-				if (j % 2 == 1)
-					glTranslatef(-10, 0, 0);//bring it right
-				else
-					glTranslatef(10, 0, 0);//bring it right
-
-				glTranslatef(0, 2, 0);
-				glScalef(50, 50, 50);
-				model_umbrella.Draw();
-				glPopMatrix();
-			}
-
-
-			// Draw boat Model
-			glPushMatrix();
-				glTranslated(i * 30, 0, i * 30);
-				glTranslated(10, 0, 0);//bring house left of the road
-				glScaled(0.5, 0.5, 0.5);
-				model_boat.Draw();
-			glPopMatrix();
-
-
-			
-
-			glPopMatrix();
-
-		}
-
-		//drawing Farm env
-		for (double i = 5.6; i < 9.6; i+=1.6){
-			glPushMatrix();
-		
-				// Draw Ground
-				glPushMatrix();
-					glRotated(45, 0, 1, 0);
-					glTranslated(0, 0, i * 50);
-					glScaled(1.3, 1, 2);
-					RenderGround(tex_farm);
-				glPopMatrix();
-
-
-				//draw Street
-				glPushMatrix();
-					glRotated(45, 0, 1, 0);
-					glTranslated(0, 0, i * 50);
-					glScaled(1, 1, 2);
-					glScaled(7, 1, 40);
-					glTranslated(-0.5, 0, -0.5);
-					drawWall(0.02, tex_street, 1);//street
-				glPopMatrix();
-
-
-				for (int j = 0; j < rand_trees_num; j++){
-					// Draw Tree Model
-					glPushMatrix();
-						glTranslated(i * 35 + -j * 10, 0, i * 35 + -j * 10);
-						if (j%2 == 1)
-							glTranslatef(-7, 0, 0);//bring it right
-						else
-							glTranslatef(7, 0, 0);//bring it right
-						glScalef(0.7, 0.7, 0.7);
-						model_tree.Draw();
-					glPopMatrix();
-				}
-			
-
-				// Draw house Model
-				glPushMatrix();
-					glTranslated(i * 30, 0, i * 30);
-					glTranslated(10, 0, 0);//bring house left of the road
-					glRotatef(250.f, 0, 1, 0);
-					glRotatef(90.f, 1, 0, 0);
-					glTranslated(0, -8, 0);
-					model_house.Draw();
-				glPopMatrix();
-
-
-			glPopMatrix();
-
 		}
 
 
 
-
-		//drawing City env
-		for (double i = 10.3; i < 15.3; i+=1.3){
+		for (int j = 0; j < rand_trees_num; j++){
+			// Draw umbrella Model
 			glPushMatrix();
-		
-				// Draw Ground
-				glPushMatrix();
-					glRotated(45, 0, 1, 0);
-					glTranslated(0, 0, i * 50);
-					glScaled(1.3, 1, 2);
-					RenderGround(tex_city);
-				glPopMatrix();
+			glTranslated(i * 40 + -j * 10, 0, i * 40 + -j * 10);
+			if (j % 2 == 1)
+				glTranslatef(-20, 0, 0);//bring it right
+			else
+				glTranslatef(20, 0, 0);//bring it right
 
-
-				//draw Street
-				glPushMatrix();
-					glRotated(45, 0, 1, 0);
-					glTranslated(0, 0, i * 50);
-					glScaled(1, 1, 2);
-					glScaled(7, 1, 40);
-					glTranslated(-0.5, 0, -0.5);
-					drawWall(0.02, tex_street, 1);//street
-				glPopMatrix();
-
-
-				//drawing buldings
-				glPushMatrix();
-					glTranslated(i * 32, 0, i * 32);
-					glPushMatrix();
-						glTranslated(15, 0, 0);//bring building left of the road
-						glScaled(1, ((int)(i + 2) % 3) + 1, 1);
-						glScaled(1, 0.5, 1);
-						glScaled(0.05, 0.05, 0.05);
-						glRotated(-45, 0, 1, 0);
-						model_building.Draw();
-					glPopMatrix();
-					glPushMatrix();
-						glTranslated(15, 0, 30);//bring building right of the road
-						glScaled(1, ((int)i % 3) + 1, 1);
-						glScaled(1, 0.5, 1);
-						glScaled(0.05, 0.05, 0.05);
-						glRotated(-45, 0, 1, 0);
-						model_building.Draw();
-					glPopMatrix();
-				glPopMatrix();
-
-
+			glTranslatef(0, 2, 0);
+			glScalef(50, 50, 50);
+			model_umbrella.Draw();
 			glPopMatrix();
-
 		}
 
-		////drawing last Beach env
-		//for (double i = 15.8; i < 18; i++){
-		//	glPushMatrix();
 
-		//	// Draw Ground
-		//	glPushMatrix();
-		//		glRotated(45, 0, 1, 0);
-		//		glTranslated(0, 0, i * 50);
-		//		glScaled(1.3, 1, 2);
-		//		RenderGround(tex_beach);
-		//	glPopMatrix();
+		// Draw boat Model
+		glPushMatrix();
+		glTranslated(i * 30, 0, i * 30);
+		glTranslated(10, 0, 0);//bring house left of the road
+		glScaled(0.5, 0.5, 0.5);
+		model_boat.Draw();
+		glPopMatrix();
 
 
-		//	//draw Street
-		//	for (double j = -0.6; j < 1.6; j++){
-		//		glPushMatrix();
-		//			glRotated(45, 0, 1, 0);
-		//			glTranslated(0, 0,j*20 + i * 50);
-		//			glScaled(1, 1, 2);
-		//			glScaled(7, 1, 10);
-		//			glTranslated(-0.5, 0, -0.5);
-		//			drawWall(0.02, tex_beach_street, 1);//street
-		//		glPopMatrix();
-		//	}
-		//
 
 
-		//	for (int j = 0; j < rand_trees_num; j++){
-		//		// Draw umbrella Model
-		//		glPushMatrix();
-		//		glTranslated(i * 40 + -j * 10, 0, i * 40 + -j * 10);
-		//		if (j % 2 == 1)
-		//			glTranslatef(-10, 0, 0);//bring it right
-		//		else
-		//			glTranslatef(10, 0, 0);//bring it right
+		glPopMatrix();
 
-		//		glTranslatef(0, 2, 0);
-		//		glScalef(50, 50, 50);
-		//		model_umbrella.Draw();
-		//		glPopMatrix();
-		//	}
+	}
 
+	//drawing Farm env
+	for (double i = 5.6; i < 9.6; i += 1.6){
+		glPushMatrix();
 
-		//	// Draw boat Model
-		//	glPushMatrix();
-		//		glTranslated(i * 30, 0, i * 30);
-		//		glTranslated(10, 0, 0);//bring house left of the road
-		//		glScaled(0.5, 0.5, 0.5);
-		//		model_boat.Draw();
-		//	glPopMatrix();
+		// Draw Ground
+		glPushMatrix();
+		glRotated(45, 0, 1, 0);
+		glTranslated(0, 0, i * 50);
+		glScaled(1.3, 1, 2);
+		RenderGround(tex_farm);
+		glPopMatrix();
 
 
-		//	glPopMatrix();
+		//draw Street
+		glPushMatrix();
+		glRotated(45, 0, 1, 0);
+		glTranslated(0, 0, i * 50);
+		glScaled(2.5, 1, 2);
+		glScaled(7, 1, 40);
+		glTranslated(-0.5, 0, -0.5);
+		drawWall(0.02, tex_street, 1);//street
+		glPopMatrix();
 
-		//}
+
+		for (int j = 0; j < rand_trees_num; j++){
+			// Draw Tree Model
+			glPushMatrix();
+			glTranslated(i * 35 + -j * 10, 0, i * 35 + -j * 10);
+			if (j % 2 == 1)
+				glTranslatef(-17, 0, 0);//bring it right
+			else
+				glTranslatef(17, 0, 0);//bring it right
+			glScalef(0.7, 0.7, 0.7);
+			model_tree.Draw();
+			glPopMatrix();
+		}
+
+
+		// Draw house Model
+		glPushMatrix();
+		glTranslated(i * 30, 0, i * 30);
+		glTranslated(20, 0, 0);//bring house left of the road
+		glRotatef(250.f, 0, 1, 0);
+		glRotatef(90.f, 1, 0, 0);
+		glTranslated(0, -8, 0);
+		model_house.Draw();
+		glPopMatrix();
+
+
+		glPopMatrix();
+
+	}
+
+
+
+
+	//drawing City env
+	for (double i = 10.3; i < 15.3; i += 1.3){
+		glPushMatrix();
+
+		// Draw Ground
+		glPushMatrix();
+		glRotated(45, 0, 1, 0);
+		glTranslated(0, 0, i * 50);
+		glScaled(1.3, 1, 2);
+		RenderGround(tex_city);
+		glPopMatrix();
+
+
+		//draw Street
+		glPushMatrix();
+		glRotated(45, 0, 1, 0);
+		glTranslated(0, 0, i * 50);
+		glScaled(2.5, 1, 2);
+		glScaled(7, 1, 40);
+		glTranslated(-0.5, 0, -0.5);
+		drawWall(0.02, tex_street, 1);//street
+		glPopMatrix();
+
+
+		//drawing buldings
+		glPushMatrix();
+		glTranslated(i * 32, 0, i * 32);
+		glPushMatrix();
+		glTranslated(25, 0, 0);//bring building left of the road
+		glScaled(1, ((int)(i + 2) % 3) + 1, 1);
+		glScaled(1, 0.5, 1);
+		glScaled(0.05, 0.05, 0.05);
+		glRotated(-45, 0, 1, 0);
+		model_building.Draw();
+		glPopMatrix();
+		glPushMatrix();
+		glTranslated(15, 0, 35);//bring building right of the road
+		glScaled(1, ((int)i % 3) + 1, 1);
+		glScaled(1, 0.5, 1);
+		glScaled(0.05, 0.05, 0.05);
+		glRotated(-45, 0, 1, 0);
+		model_building.Draw();
+		glPopMatrix();
+		glPopMatrix();
+
+
+		glPopMatrix();
+
+	}
+
+	////drawing last Beach env
+	//for (double i = 15.8; i < 18; i++){
+	//	glPushMatrix();
+
+	//	// Draw Ground
+	//	glPushMatrix();
+	//		glRotated(45, 0, 1, 0);
+	//		glTranslated(0, 0, i * 50);
+	//		glScaled(1.3, 1, 2);
+	//		RenderGround(tex_beach);
+	//	glPopMatrix();
+
+
+	//	//draw Street
+	//	for (double j = -0.6; j < 1.6; j++){
+	//		glPushMatrix();
+	//			glRotated(45, 0, 1, 0);
+	//			glTranslated(0, 0,j*20 + i * 50);
+	//			glScaled(1, 1, 2);
+	//			glScaled(7, 1, 10);
+	//			glTranslated(-0.5, 0, -0.5);
+	//			drawWall(0.02, tex_beach_street, 1);//street
+	//		glPopMatrix();
+	//	}
+	//
+
+
+	//	for (int j = 0; j < rand_trees_num; j++){
+	//		// Draw umbrella Model
+	//		glPushMatrix();
+	//		glTranslated(i * 40 + -j * 10, 0, i * 40 + -j * 10);
+	//		if (j % 2 == 1)
+	//			glTranslatef(-10, 0, 0);//bring it right
+	//		else
+	//			glTranslatef(10, 0, 0);//bring it right
+
+	//		glTranslatef(0, 2, 0);
+	//		glScalef(50, 50, 50);
+	//		model_umbrella.Draw();
+	//		glPopMatrix();
+	//	}
+
+
+	//	// Draw boat Model
+	//	glPushMatrix();
+	//		glTranslated(i * 30, 0, i * 30);
+	//		glTranslated(10, 0, 0);//bring house left of the road
+	//		glScaled(0.5, 0.5, 0.5);
+	//		model_boat.Draw();
+	//	glPopMatrix();
+
+
+	//	glPopMatrix();
+
+	//}
 
 
 	glPopMatrix(); //scenes
@@ -615,33 +634,33 @@ void myDisplay(void)
 
 	// Draw car Model
 	glPushMatrix();
-		glScalef(0.5f, 0.5f, 0.5f);
-		glRotated(45, 0, 1, 0);
-		car.drawCar();
+	glScalef(0.5f, 0.5f, 0.5f);
+	glRotated(45, 0, 1, 0);
+	car.drawCar();
 	glPopMatrix();
 
-	
 
 
-//sky box
+
+	//sky box
 	glPushMatrix();
 
 	GLUquadricObj * qobj;
 	qobj = gluNewQuadric();
 	//glTranslated(50,0,0);
 	glRotated(180, 0, 1, 0);
-	glRotated(90,1,0,1);
+	glRotated(90, 1, 0, 1);
 	glBindTexture(GL_TEXTURE_2D, tex);
-	gluQuadricTexture(qobj,true);
-	gluQuadricNormals(qobj,GL_SMOOTH);
-	gluSphere(qobj,zFar/2,100,100);
+	gluQuadricTexture(qobj, true);
+	gluQuadricNormals(qobj, GL_SMOOTH);
+	gluSphere(qobj, zFar / 2, 100, 100);
 	gluDeleteQuadric(qobj);
-	
-	
+
+
 	glPopMatrix();
-	
-	
-	
+
+
+
 	glutSwapBuffers();
 }
 
@@ -660,6 +679,9 @@ void ground_motion(int val)//timer animation function, allows the user to pass a
 	if (ground < -535){
 		ground = 0;
 		level++;
+		for (int i = 0; i < 20; i++){
+			lanes_random_number[i] = rand() % 4;
+		}
 		//glutTimerFunc(50, ground_motion, 0);
 	}
 
@@ -833,7 +855,7 @@ void LoadAssets()
 	tex_city.Load("Textures/city.bmp");
 	tex_farm.Load("Textures/ground.bmp");
 	tex_beach.Load("Textures/beach.bmp");
-	tex_street.Load("Textures/street.bmp");
+	tex_street.Load("Textures/street4Lanes.bmp");
 	tex_beach_street.Load("Textures/beach_street.bmp");
 	loadBMP(&tex, "Textures/sky4-jpg.bmp", true);
 	loadBMP(&tex_boat, "Models/boat/Might be wood.bmp", true);
@@ -858,10 +880,10 @@ void SpecialInput(int key, int x, int y)
 	switch (key)
 	{
 	case GLUT_KEY_UP:
-		{
-			if (speed < MAX_SPEED)
-				speed += 1.0f;
-		}
+	{
+		if (speed < MAX_SPEED)
+			speed += 1.0f;
+	}
 	break;
 	case GLUT_KEY_DOWN:
 	{
@@ -888,6 +910,10 @@ void keyDownFunc(int in)
 //=======================================================================
 void main(int argc, char** argv)
 {
+	for (int i = 0; i < 20; i++){
+		lanes_random_number[i] = rand() % 4;
+	}
+
 	glutInit(&argc, argv);
 
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
@@ -915,7 +941,7 @@ void main(int argc, char** argv)
 	myInit();
 
 	LoadAssets();
-		glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
 	glEnable(GL_NORMALIZE);
