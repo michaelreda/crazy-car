@@ -10,6 +10,8 @@ int HEIGHT = 720;
 double time = 0;
 
 int* lanes_random_number = new int[20];
+double* obstacles_x = new double[1000];
+double* obstacles_z = new double[1000];
 
 #define CENTER_LEFT_LANE 0
 #define LEFT_LANE 1
@@ -295,20 +297,29 @@ void drawBitmapText(char *string, float x, float y, float z)
 //=======================================================================
 // Obtacles
 //=======================================================================
+
+
+int obstacles_index = 0;
+
 void draw_road_cone(double distance, int lane){
 	glPushMatrix();
 	glTranslated(distance, 0, distance);
+	obstacles_z[obstacles_index] = distance;
 	if (lane == LEFT_LANE){
 		glTranslated(8, 0, 0);//bring house left of the road
+		obstacles_x[obstacles_index] = distance+8;
 	}
 	else if (lane == CENTER_LEFT_LANE){
 		glTranslated(3, 0, 0);//bring house left of the road
+		obstacles_x[obstacles_index] = distance + 3;
 	}
 	else if (lane == CENTER_RIGHT_LANE){
 		glTranslated(-3, 0, 0);//bring house left of the road
+		obstacles_x[obstacles_index] = distance - 3;
 	}
 	else if (lane == RIGHT_LANE){
 		glTranslated(-8, 0, 0);//bring house left of the road
+		obstacles_x[obstacles_index] = distance - 8;
 	}
 	glScaled(0.03, 0.03, 0.03);
 	model_road_cone.Draw();
@@ -318,17 +329,22 @@ void draw_road_cone(double distance, int lane){
 void draw_barrel(double distance, int lane){
 	glPushMatrix();
 	glTranslated(distance, 0, distance);
+	obstacles_z[obstacles_index] = distance;
 	if (lane == LEFT_LANE){
 		glTranslated(5, 0, 0);//bring house left of the road
+		obstacles_x[obstacles_index] = distance + 5;
 	}
 	else if (lane == CENTER_LEFT_LANE){
 		glTranslated(1, 0, 0);//bring house left of the road
+		obstacles_x[obstacles_index] = distance + 1;
 	}
 	else if (lane == CENTER_RIGHT_LANE){
 		glTranslated(-4, 0, 0);//bring house left of the road
+		obstacles_x[obstacles_index] = distance - 4;
 	}
 	else if (lane == RIGHT_LANE){
 		glTranslated(-9, 0, 0);//bring house left of the road
+		obstacles_x[obstacles_index] = distance - 9;
 	}
 	//glTranslated(0, -3, 0);
 	glScaled(0.02, 0.02, 0.02);
@@ -342,9 +358,12 @@ void draw_barrel(double distance, int lane){
 int level = 2;
 int rand_trees_num = rand() % 2 + 2;
 int car_status = 5;
+
 void myDisplay(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	obstacles_index = 0;
 
 
 
@@ -398,12 +417,14 @@ void myDisplay(void)
 		draw_road_cone(i, CENTER_LEFT_LANE);
 		draw_road_cone(i + 100, CENTER_RIGHT_LANE);*/
 		draw_road_cone(i, lanes_random_number[(int)i % 20]);
+		obstacles_index++;
 	}
 
 	for (double i = 0; i < 530; i += 250 / level){
 		/*draw_barrel(i, LEFT_LANE);
 		draw_barrel(i + 100, RIGHT_LANE);*/
 		draw_barrel(i, lanes_random_number[(int)i % 19 + 1]);
+		obstacles_index++;
 	}
 	glPopMatrix();
 
@@ -679,6 +700,7 @@ void ground_motion(int val)//timer animation function, allows the user to pass a
 	if (ground < -535){
 		ground = 0;
 		level++;
+		obstacles_index = 0;
 		for (int i = 0; i < 20; i++){
 			lanes_random_number[i] = rand() % 4;
 		}
