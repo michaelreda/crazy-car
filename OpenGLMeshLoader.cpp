@@ -3,6 +3,9 @@
 #include "GLTexture.h"
 #include <glut.h>
 #include "Car.h"
+#include <algorithm>
+
+
 int WIDTH = 1280;
 int HEIGHT = 720;
 
@@ -10,9 +13,15 @@ int HEIGHT = 720;
 double time = 0;
 
 int* lanes_random_number = new int[20];
-double obstacles_x[1000];// = new double[1000];
-double obstacles_z[1000];// = new double[1000];
-int obstacles_types[1000];
+
+struct Obstacle{
+	double x;
+	double z;
+	char type;
+};
+
+Obstacle obstacles[1000];
+
 int obsIdx = 0;
 
 #define NUM_SCAN_OBS 3
@@ -318,23 +327,24 @@ int obstacles_index = 0;
 void draw_road_cone(double distance, int lane){
 	glPushMatrix();
 	glTranslated(distance, 0, distance);
-	obstacles_z[obstacles_index] = distance;
-	obstacles_types[obstacles_index] = 2;
+	
+	obstacles[obstacles_index].z = distance;
+	obstacles[obstacles_index].type = 2;
 	if (lane == LEFT_LANE){
 		glTranslated(8, 0, 0);//bring house left of the road
-		obstacles_x[obstacles_index] = distance+8;
+		obstacles[obstacles_index].x = distance + 8;
 	}
 	else if (lane == CENTER_LEFT_LANE){
 		glTranslated(3, 0, 0);//bring house left of the road
-		obstacles_x[obstacles_index] = distance + 3;
+		obstacles[obstacles_index].x = distance + 3;
 	}
 	else if (lane == CENTER_RIGHT_LANE){
 		glTranslated(-3, 0, 0);//bring house left of the road
-		obstacles_x[obstacles_index] = distance - 3;
+		obstacles[obstacles_index].x = distance - 3;
 	}
 	else if (lane == RIGHT_LANE){
 		glTranslated(-8, 0, 0);//bring house left of the road
-		obstacles_x[obstacles_index] = distance - 8;
+		obstacles[obstacles_index].x = distance - 8;
 	}
 	glScaled(0.03, 0.03, 0.03);
 	model_road_cone.Draw();
@@ -344,23 +354,23 @@ void draw_road_cone(double distance, int lane){
 void draw_barrel(double distance, int lane){
 	glPushMatrix();
 	glTranslated(distance, 0, distance);
-	obstacles_z[obstacles_index] = distance;
-	obstacles_types[obstacles_index] = 1;
+	obstacles[obstacles_index].z = distance;
+	obstacles[obstacles_index].type = 1;
 	if (lane == LEFT_LANE){
 		glTranslated(5, 0, 0);//bring house left of the road
-		obstacles_x[obstacles_index] = distance + 5;
+		obstacles[obstacles_index].x = distance + 5;
 	}
 	else if (lane == CENTER_LEFT_LANE){
 		glTranslated(1, 0, 0);//bring house left of the road
-		obstacles_x[obstacles_index] = distance + 1;
+		obstacles[obstacles_index].x = distance + 1;
 	}
 	else if (lane == CENTER_RIGHT_LANE){
 		glTranslated(-4, 0, 0);//bring house left of the road
-		obstacles_x[obstacles_index] = distance - 4;
+		obstacles[obstacles_index].x = distance - 4;
 	}
 	else if (lane == RIGHT_LANE){
 		glTranslated(-9, 0, 0);//bring house left of the road
-		obstacles_x[obstacles_index] = distance - 9;
+		obstacles[obstacles_index].x = distance - 9;
 	}
 	glTranslated(0, -1, 0);
 	glScaled(0.02, 0.02, 0.02);
@@ -371,6 +381,11 @@ void draw_barrel(double distance, int lane){
 //=======================================================================
 // Display Function
 //=======================================================================
+
+bool obstacles_sorter(Obstacle const& lhs, Obstacle const& rhs) {
+	return lhs.z < rhs.z;
+}
+
 int level = 2;
 int rand_trees_num = rand() % 2 + 2;
 int car_status = 5;
@@ -445,6 +460,9 @@ void myDisplay(void)
 		obstacles_index++;
 	}
 	glPopMatrix();
+
+	//sorting obstacles
+	std::sort(obstacles, obstacles + obstacles_index, &obstacles_sorter);
 
 	//drawing Beach env
 	for (int i = 0; i < 5; i++){
@@ -992,15 +1010,15 @@ void collisionDetection(int in)
 {
 	float carFrontZ = -ground + CAR_LENGTH / 2;
 	float carBackZ = -ground - CAR_LENGTH / 2;
-	while (obstacles_z[obsIdx+1] < carBackZ)
+	while (obstacles[obsIdx+1].z < carBackZ)
 		obsIdx++;
 	float carLeft = DEFAULT_CAR_DISP + carLRDisp;
 	float carRight = carLeft - CAR_WIDTH;
 
 	for (int i = 0; i < NUM_SCAN_OBS; i++)
 	{
-		float obsX = obstacles_x[obsIdx];
-		float obsZ = obstacles_z[obsIdx];
+		float obsX = obstacles[obsIdx].x;
+		float obsZ = obstacles[obsIdx].z;
 
 		if (obsZ <= carFrontZ && obsZ >= carBackZ && obsX <= carLeft && obsX >= carRight)
 		{
