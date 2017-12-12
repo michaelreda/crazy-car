@@ -10,8 +10,8 @@ int HEIGHT = 720;
 double time = 0;
 
 int* lanes_random_number = new int[20];
-double* obstacles_x = new double[1000];
-double* obstacles_z = new double[1000];
+double obstacles_x[1000];// = new double[1000];
+double obstacles_z[1000];// = new double[1000];
 int obsIdx = 0;
 
 #define NUM_SCAN_OBS 3
@@ -986,9 +986,9 @@ void SpecialInput(int key, int x, int y)
 }
 void collisionDetection(int in)
 {
-	float carFrontZ = ground + CAR_LENGTH / 2;
-	float carBackZ = ground - CAR_LENGTH / 2;
-	while (obstacles_z[obsIdx] < carBackZ)
+	float carFrontZ = -ground + CAR_LENGTH / 2;
+	float carBackZ = -ground - CAR_LENGTH / 2;
+	while (obstacles_z[obsIdx+1] < carBackZ)
 		obsIdx++;
 	float carLeft = DEFAULT_CAR_DISP + carLRDisp;
 	float carRight = carLeft - CAR_WIDTH;
