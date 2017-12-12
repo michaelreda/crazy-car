@@ -47,7 +47,7 @@ public:
 	}
 };
 
-Vector Eye(-20, 5, -10);
+Vector Eye(-20, 5, -20);
 Vector At(zFar, 0, zFar);
 Vector Up(0, 1, 0);
 
@@ -76,9 +76,16 @@ double ground;
 
 #define MAX_SPEED 4.0f
 #define ROTATION_MULTIPLIER 8.0f
-#define DRAG 0.18f
+#define DRAG 0.04f
+#define MAX_CAR_ROT_ANGLE 3.0f
 Car car;
 float speed = 0;
+float carLRDisp = 0.0f;
+bool accelerating = false;
+bool braking = false;
+bool leftTurn = false;
+bool rightTurn = false;
+float carRotationAngle = 0.0f;
 
 //=======================================================================
 // Lighting Configuration Function
@@ -396,7 +403,7 @@ void myDisplay(void)
 	//glColor3d(1, 1, 1);
 	glTranslated(5.5, 0, -5.5);//place it right
 	char statusStr[512];
-	sprintf(statusStr, "Car Status: %d Car Speed: %d Km/h", car_status, (int)speed * 10);//converts double to string
+	sprintf(statusStr, "Car Status: %d Car Speed: %d Km/h", car_status, (int)(speed * 10));//converts double to string
 	drawBitmapText(statusStr, Eye.x + 10, 0, Eye.z + 10); // moves with the camera
 	glPopMatrix();
 
@@ -657,6 +664,9 @@ void myDisplay(void)
 	glPushMatrix();
 	glScalef(0.5f, 0.5f, 0.5f);
 	glRotated(45, 0, 1, 0);
+	glTranslatef(2.25f + carLRDisp, 0.0f, 0.0f);
+	if (speed > 0)
+			glRotatef(carRotationAngle, 0, 1, 0);
 	car.drawCar();
 	glPopMatrix();
 
@@ -895,7 +905,35 @@ void time_counter(int val)//timer animation function, allows the user to pass an
 	glutPostRedisplay();						// redraw 		
 	glutTimerFunc(100, time_counter, 0);					//recall the time function after 1000 ms and pass a zero value as an input to the time func.
 }
-
+void carControlTimer(int val)
+{
+	if (accelerating)
+	{
+		if (speed < MAX_SPEED)
+			speed += 0.1f;
+		if (speed > MAX_SPEED)
+			speed = MAX_SPEED;
+	}
+	else if (braking)
+	{
+		speed -= 0.2f;
+		if (speed < 0)
+			speed = 0.0f;
+	}
+	if (leftTurn)
+	{
+		carLRDisp += 0.2f * speed;
+		if (carRotationAngle < MAX_CAR_ROT_ANGLE - 0.8f)
+			carRotationAngle += 0.8f;
+	}
+	else if (rightTurn)
+	{
+		carLRDisp -= 0.2f * speed;
+		if(carRotationAngle > -MAX_CAR_ROT_ANGLE + 0.8f)
+			carRotationAngle -= 0.8f;
+	}
+	glutTimerFunc(100, carControlTimer, 0);
+}
 
 void SpecialInput(int key, int x, int y)
 {
@@ -903,29 +941,61 @@ void SpecialInput(int key, int x, int y)
 	{
 	case GLUT_KEY_UP:
 	{
-		if (speed < MAX_SPEED)
-			speed += 1.0f;
+		accelerating = true;
 	}
 	break;
 	case GLUT_KEY_DOWN:
 	{
-		speed -= 1.5f;
-		if (speed < 0)
-			speed = 0.0f;
+		braking = true;
 	}
 	break;
 	case GLUT_KEY_LEFT:
-		//do something here
-		break;
+	{
+		leftTurn = true;
+		car.setCarDirection(LEFT);
+	}
+	break;
 	case GLUT_KEY_RIGHT:
-		//do something here
-		break;
+	{
+		rightTurn = true;
+		car.setCarDirection(RIGHT);
+	}
+	break;
 	}
 
 	glutPostRedisplay();
 }
-void keyDownFunc(int in)
+void specialkeyUpFunc(int key, int x, int y)
 {
+	switch (key)
+	{
+	case GLUT_KEY_UP:
+	{
+		accelerating = false;
+	}
+	break;
+	case GLUT_KEY_DOWN:
+	{
+		braking = false;
+	}
+	break;
+	case GLUT_KEY_LEFT:
+	{
+		leftTurn = false;
+		car.setCarDirection(CENTER);
+		carRotationAngle = 0.0f;
+	}
+	break;
+	case GLUT_KEY_RIGHT:
+	{
+		rightTurn = false;
+		car.setCarDirection(CENTER);
+		carRotationAngle = 0.0f;
+	}
+	break;
+	}
+
+	glutPostRedisplay();
 }
 //=======================================================================
 // Main Function
@@ -960,6 +1030,8 @@ void main(int argc, char** argv)
 
 	glutTimerFunc(0, time_counter, 0);
 	glutTimerFunc(50, ground_motion, 0);
+	glutTimerFunc(100, carControlTimer, 0);
+	glutSpecialUpFunc(specialkeyUpFunc);
 	myInit();
 
 	LoadAssets();

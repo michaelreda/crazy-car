@@ -65,9 +65,9 @@ void Car::drawCar()
 			glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
 			glTranslatef(4.2f, 1.2f, -4.0f);
 			if (this->direction == LEFT)
-				glRotatef(30.0f, 0.0f, 1.0f, 0.0f);
+				glRotatef(15.0f, 0.0f, 1.0f, 0.0f);
 			if (this->direction == RIGHT)
-				glRotatef(-30.0f, 0.0f, 1.0f, 0.0f);
+				glRotatef(-15.0f, 0.0f, 1.0f, 0.0f);
 			glRotatef(this->wheelRotation, -1.0f, 0.0f, 0.0f);
 			this->wheelModel.Draw();
 		glPopMatrix();
