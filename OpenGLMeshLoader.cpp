@@ -12,6 +12,7 @@ double time = 0;
 int* lanes_random_number = new int[20];
 double obstacles_x[1000];// = new double[1000];
 double obstacles_z[1000];// = new double[1000];
+int obstacles_types[1000];
 int obsIdx = 0;
 
 #define NUM_SCAN_OBS 3
@@ -318,6 +319,7 @@ void draw_road_cone(double distance, int lane){
 	glPushMatrix();
 	glTranslated(distance, 0, distance);
 	obstacles_z[obstacles_index] = distance;
+	obstacles_types[obstacles_index] = 2;
 	if (lane == LEFT_LANE){
 		glTranslated(8, 0, 0);//bring house left of the road
 		obstacles_x[obstacles_index] = distance+8;
@@ -343,6 +345,7 @@ void draw_barrel(double distance, int lane){
 	glPushMatrix();
 	glTranslated(distance, 0, distance);
 	obstacles_z[obstacles_index] = distance;
+	obstacles_types[obstacles_index] = 1;
 	if (lane == LEFT_LANE){
 		glTranslated(5, 0, 0);//bring house left of the road
 		obstacles_x[obstacles_index] = distance + 5;
@@ -425,6 +428,7 @@ void myDisplay(void)
 
 	//obstacles
 	glPushMatrix();
+	
 	for (double i = 50; i < 530; i += 200 / level){
 		/*draw_road_cone(i, LEFT_LANE);
 		draw_road_cone(i+100, RIGHT_LANE);
@@ -434,7 +438,7 @@ void myDisplay(void)
 		obstacles_index++;
 	}
 
-	for (double i = 0; i < 530; i += 250 / level){
+	for (double i = 30; i < 530; i += 250 / level){
 		/*draw_barrel(i, LEFT_LANE);
 		draw_barrel(i + 100, RIGHT_LANE);*/
 		draw_barrel(i, lanes_random_number[(int)i % 19 + 1]);
