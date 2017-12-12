@@ -365,6 +365,7 @@ void draw_barrel(double distance, int lane){
 int level = 2;
 int rand_trees_num = rand() % 2 + 2;
 int car_status = 5;
+double sky_theta = 0;
 
 void myDisplay(void)
 {
@@ -679,8 +680,9 @@ void myDisplay(void)
 	GLUquadricObj * qobj;
 	qobj = gluNewQuadric();
 	//glTranslated(50,0,0);
+	glRotated(sky_theta, 1, 0, 0);
 	glRotated(180, 0, 1, 0);
-	glRotated(90, 1, 0, 1);
+	//glRotated(90, 1, 0, 1);
 	glBindTexture(GL_TEXTURE_2D, tex);
 	gluQuadricTexture(qobj, true);
 	gluQuadricNormals(qobj, GL_SMOOTH);
@@ -709,6 +711,7 @@ void ground_motion(int val)//timer animation function, allows the user to pass a
 	}
 	if (ground < -535){
 		ground = 0;
+		speed = 0;
 		level++;
 		obstacles_index = 0;
 		for (int i = 0; i < 20; i++){
@@ -889,7 +892,7 @@ void LoadAssets()
 	tex_beach.Load("Textures/beach.bmp");
 	tex_street.Load("Textures/street4Lanes.bmp");
 	tex_beach_street.Load("Textures/beach_street.bmp");
-	loadBMP(&tex, "Textures/sky4-jpg.bmp", true);
+	loadBMP(&tex, "Textures/sky5-jpg.bmp", true);
 	loadBMP(&tex_boat, "Models/boat/Might be wood.bmp", true);
 }
 
@@ -897,6 +900,11 @@ void LoadAssets()
 // Animation Functions
 //=======================================================================
 
+void sky_animation(int val){
+	sky_theta += 0.1;
+	glutPostRedisplay();
+	glutTimerFunc(10, sky_animation, 0);
+}
 
 void time_counter(int val)//timer animation function, allows the user to pass an integer valu to the timer function.
 {
@@ -1029,6 +1037,7 @@ void main(int argc, char** argv)
 	glutSpecialFunc(SpecialInput);
 
 	glutTimerFunc(0, time_counter, 0);
+	glutTimerFunc(0, sky_animation, 0);
 	glutTimerFunc(50, ground_motion, 0);
 	glutTimerFunc(100, carControlTimer, 0);
 	glutSpecialUpFunc(specialkeyUpFunc);
