@@ -78,6 +78,7 @@ double ground;
 #define ROTATION_MULTIPLIER 8.0f
 #define DRAG 0.04f
 #define MAX_CAR_ROT_ANGLE 3.0f
+#define MAX_CAR_LR_DISP 13.0f
 Car car;
 float speed = 0;
 float carLRDisp = 0.0f;
@@ -930,13 +931,17 @@ void carControlTimer(int val)
 	}
 	if (leftTurn)
 	{
-		carLRDisp += 0.2f * speed;
+		carLRDisp += 0.24f * speed;
+		if (carLRDisp > MAX_CAR_LR_DISP)
+			carLRDisp = MAX_CAR_LR_DISP;
 		if (carRotationAngle < MAX_CAR_ROT_ANGLE - 0.8f)
 			carRotationAngle += 0.8f;
 	}
 	else if (rightTurn)
 	{
-		carLRDisp -= 0.2f * speed;
+		carLRDisp -= 0.24f * speed;
+		if (carLRDisp < -MAX_CAR_LR_DISP)
+			carLRDisp = -MAX_CAR_LR_DISP;
 		if(carRotationAngle > -MAX_CAR_ROT_ANGLE + 0.8f)
 			carRotationAngle -= 0.8f;
 	}
