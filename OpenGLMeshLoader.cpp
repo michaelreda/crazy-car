@@ -12,11 +12,16 @@ double time = 0;
 int* lanes_random_number = new int[20];
 double* obstacles_x = new double[1000];
 double* obstacles_z = new double[1000];
+int obsIdx = 0;
 
+#define NUM_SCAN_OBS 3
+#define CAR_LENGTH 6.5f
+#define CAR_WIDTH 2.5f
 #define CENTER_LEFT_LANE 0
 #define LEFT_LANE 1
 #define CENTER_RIGHT_LANE 2
 #define RIGHT_LANE 3
+#define DEFAULT_CAR_DISP 2.25f
 
 
 GLuint tex;
@@ -666,7 +671,7 @@ void myDisplay(void)
 	glPushMatrix();
 	glScalef(0.5f, 0.5f, 0.5f);
 	glRotated(45, 0, 1, 0);
-	glTranslatef(2.25f + carLRDisp, 0.0f, 0.0f);
+	glTranslatef(DEFAULT_CAR_DISP + carLRDisp, 0.0f, 0.0f);
 	if (speed > 0)
 			glRotatef(carRotationAngle, 0, 1, 0);
 	car.drawCar();
@@ -712,6 +717,7 @@ void ground_motion(int val)//timer animation function, allows the user to pass a
 	}
 	if (ground < -535){
 		ground = 0;
+		obsIdx = 0;
 		speed = 0;
 		level++;
 		obstacles_index = 0;
@@ -978,6 +984,28 @@ void SpecialInput(int key, int x, int y)
 
 	glutPostRedisplay();
 }
+void collisionDetection(int in)
+{
+	float carFrontZ = ground + CAR_LENGTH / 2;
+	float carBackZ = ground - CAR_LENGTH / 2;
+	while (obstacles_z[obsIdx] < carBackZ)
+		obsIdx++;
+	float carLeft = DEFAULT_CAR_DISP + carLRDisp;
+	float carRight = carLeft - CAR_WIDTH;
+
+	for (int i = 0; i < NUM_SCAN_OBS; i++)
+	{
+		float obsX = obstacles_x[obsIdx];
+		float obsZ = obstacles_z[obsIdx];
+
+		if (obsZ <= carFrontZ && obsZ >= carBackZ && obsX <= carLeft && obsX >= carRight)
+		{
+			//collision
+			time = 0;
+		}
+	}
+	glutTimerFunc(100, collisionDetection, 0);
+}
 void specialkeyUpFunc(int key, int x, int y)
 {
 	switch (key)
@@ -1045,6 +1073,7 @@ void main(int argc, char** argv)
 	glutTimerFunc(0, sky_animation, 0);
 	glutTimerFunc(50, ground_motion, 0);
 	glutTimerFunc(100, carControlTimer, 0);
+	glutTimerFunc(100, collisionDetection, 0);
 	glutSpecialUpFunc(specialkeyUpFunc);
 	myInit();
 
