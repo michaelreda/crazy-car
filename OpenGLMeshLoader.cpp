@@ -3,7 +3,6 @@
 #include "GLTexture.h"
 #include <glut.h>
 #include "Car.h"
-#include <math.h>
 #include <algorithm>
 
 
@@ -12,10 +11,11 @@ int HEIGHT = 720;
 
 
 double time = 0;
+float light = 0.7f;
 
 int* lanes_random_number = new int[20];
 
-struct Obstacle{
+struct Obstacle {
 	double x;
 	double z;
 	char type;
@@ -86,6 +86,7 @@ GLTexture tex_city;
 GLTexture tex_beach;
 GLTexture tex_beach_street;
 GLTexture tex_street;
+GLTexture tex_race_end;
 
 //variables
 double ground;
@@ -107,6 +108,7 @@ float carRotationAngle = 0.0f;
 //=======================================================================
 // Lighting Configuration Function
 //=======================================================================
+
 void InitLightSource()
 {
 	// Enable Lighting for this OpenGL Program
@@ -115,6 +117,7 @@ void InitLightSource()
 	// Enable Light Source number 0
 	// OpengL has 8 light sources
 	glEnable(GL_LIGHT0);
+
 
 	// Define Light source 0 ambient light
 	GLfloat ambient[] = { 0.1f, 0.1f, 0.1, 1.0f };
@@ -197,7 +200,7 @@ void myInit(void)
 //=======================================================================
 void RenderGround(GLTexture groundTex)
 {
-	glDisable(GL_LIGHTING);	// Disable lighting 
+	//glDisable(GL_LIGHTING);	// Disable lighting 
 
 	glColor3f(0.6, 0.6, 0.6);	// Dim the ground texture a bit
 
@@ -219,15 +222,15 @@ void RenderGround(GLTexture groundTex)
 	glEnd();
 	glPopMatrix();
 
-	glEnable(GL_LIGHTING);	// Enable lighting again for other entites coming throung the pipeline.
+	//glEnable(GL_LIGHTING);	// Enable lighting again for other entites coming throung the pipeline.
 
 	glColor3f(1, 1, 1);	// Set material back to white instead of grey used for the ground texture.
 }
 
 
-void drawCube(double length, GLTexture texture, double texture_width){
+void drawCube(double length, GLTexture texture, double texture_width) {
 
-	glDisable(GL_LIGHTING);	// Disable lighting 
+	//glDisable(GL_LIGHTING);	// Disable lighting 
 
 	glColor3f(0.6, 0.6, 0.6);	// Dim the ground texture a bit
 
@@ -281,12 +284,12 @@ void drawCube(double length, GLTexture texture, double texture_width){
 
 
 
-	glEnable(GL_LIGHTING);	// Enable lighting again for other entites coming throung the pipeline.
+	//glEnable(GL_LIGHTING);	// Enable lighting again for other entites coming throung the pipeline.
 
 	glColor3f(1, 1, 1);	// Set material back to white instead of grey used for the ground texture.
 }
 
-void drawSphere(double radius){
+void drawSphere(double radius) {
 	GLUquadricObj * qobj;
 	qobj = gluNewQuadric();
 	//glTranslated(50, 0, 0);
@@ -309,6 +312,8 @@ void drawWall(double thickness, GLTexture texture, double texture_width) {
 //text function
 void drawBitmapText(char *string, float x, float y, float z)
 {
+	glDisable(GL_LIGHTING);
+	//glColor3d(1, 1, 1);
 	char *c;
 	glRasterPos3f(x, y, z);
 
@@ -316,6 +321,7 @@ void drawBitmapText(char *string, float x, float y, float z)
 	{
 		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);
 	}
+	glEnable(GL_LIGHTING);
 }
 
 //=======================================================================
@@ -324,27 +330,26 @@ void drawBitmapText(char *string, float x, float y, float z)
 
 
 int obstacles_index = 0;
-
-void draw_road_cone(double distance, int lane){
+void draw_road_cone(double distance, int lane) {
 	glPushMatrix();
 	glRotatef(45, 0, 1, 0);
 	glTranslated(0, 0, distance);
-	
+
 	obstacles[obstacles_index].z = distance;
 	obstacles[obstacles_index].type = 2;
-	if (lane == LEFT_LANE){
+	if (lane == LEFT_LANE) {
 		glTranslated(6, 0, 0);//bring house left of the road
 		obstacles[obstacles_index].x = 6;
 	}
-	else if (lane == CENTER_LEFT_LANE){
+	else if (lane == CENTER_LEFT_LANE) {
 		glTranslated(3, 0, 0);//bring house left of the road
 		obstacles[obstacles_index].x = 3;
 	}
-	else if (lane == CENTER_RIGHT_LANE){
+	else if (lane == CENTER_RIGHT_LANE) {
 		glTranslated(-3, 0, 0);//bring house left of the road
 		obstacles[obstacles_index].x = -3;
 	}
-	else if (lane == RIGHT_LANE){
+	else if (lane == RIGHT_LANE) {
 		glTranslated(-8, 0, 0);//bring house left of the road
 		obstacles[obstacles_index].x = -8;
 	}
@@ -353,25 +358,25 @@ void draw_road_cone(double distance, int lane){
 	glPopMatrix();
 }
 
-void draw_barrel(double distance, int lane){
+void draw_barrel(double distance, int lane) {
 	glPushMatrix();
 	glRotatef(45, 0, 1, 0);
 	glTranslated(0, 0, distance);
 	obstacles[obstacles_index].z = distance;
 	obstacles[obstacles_index].type = 1;
-	if (lane == LEFT_LANE){
+	if (lane == LEFT_LANE) {
 		glTranslated(5, 0, 0);//bring house left of the road
 		obstacles[obstacles_index].x = 5;
 	}
-	else if (lane == CENTER_LEFT_LANE){
+	else if (lane == CENTER_LEFT_LANE) {
 		glTranslated(1, 0, 0);//bring house left of the road
 		obstacles[obstacles_index].x = 1;
 	}
-	else if (lane == CENTER_RIGHT_LANE){
+	else if (lane == CENTER_RIGHT_LANE) {
 		glTranslated(-4, 0, 0);//bring house left of the road
 		obstacles[obstacles_index].x = -4;
 	}
-	else if (lane == RIGHT_LANE){
+	else if (lane == RIGHT_LANE) {
 		glTranslated(-6, 0, 0);//bring house left of the road
 		obstacles[obstacles_index].x = -6;
 	}
@@ -380,6 +385,7 @@ void draw_barrel(double distance, int lane){
 	model_barrel.Draw();
 	glPopMatrix();
 }
+
 
 //=======================================================================
 // Display Function
@@ -394,6 +400,7 @@ int rand_trees_num = rand() % 2 + 2;
 int car_status = 5;
 double sky_theta = 0;
 
+
 void myDisplay(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -401,20 +408,23 @@ void myDisplay(void)
 	obstacles_index = 0;
 
 
-
-	GLfloat lightIntensity[] = { 0.7, 0.7, 0.7, 1.0f };
+	GLfloat lightSpecular[] = { light, light, light, light };
+	glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
+	GLfloat lightDiffuse[] = { light, light, light, light };
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
+	GLfloat lightIntensity[] = { light, light, light, light };
 	GLfloat lightPosition[] = { 0.0f, 100.0f, 0.0f, 0.0f };
 	glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
 	glLightfv(GL_LIGHT0, GL_AMBIENT, lightIntensity);
 
 	//draw Time
 	glPushMatrix();
-	//glColor3d(1, 1, 1);
+
 	glTranslated(-5.5, 0, 5.5);//place it right
 	char timestr[512];
 	sprintf(timestr, "Time: %g s", time);//converts double to string
-	//sprintf(timestr, "Ground: %g s", ground);//converts double to string
 	drawBitmapText(timestr, Eye.x + 10, 0, Eye.z + 10); // moves with the camera
+
 	glPopMatrix();
 
 	//draw Level
@@ -431,7 +441,8 @@ void myDisplay(void)
 	//glColor3d(1, 1, 1);
 	glTranslated(5.5, 0, -5.5);//place it right
 	char statusStr[512];
-	sprintf(statusStr, "Car Status: %d Car Speed: %d Km/h", car_status, (int)(speed * 10));//converts double to string
+	//sprintf(statusStr, "Car Status: %d Car Speed: %d Km/h", car_status, (int)(speed * 10));//converts double to string
+	sprintf(statusStr, "Light: %f sky_theta: %g Km/h", light, sky_theta);//converts double to string
 	drawBitmapText(statusStr, Eye.x + 10, 0, Eye.z + 10); // moves with the camera
 	glPopMatrix();
 
@@ -446,8 +457,8 @@ void myDisplay(void)
 
 	//obstacles
 	glPushMatrix();
-	
-	for (double i = 50; i < 530; i += 200 / level){
+
+	for (double i = 50; i < 530; i += 200 / level) {
 		/*draw_road_cone(i, LEFT_LANE);
 		draw_road_cone(i+100, RIGHT_LANE);
 		draw_road_cone(i, CENTER_LEFT_LANE);
@@ -456,7 +467,7 @@ void myDisplay(void)
 		obstacles_index++;
 	}
 
-	for (double i = 30; i < 530; i += 250 / level){
+	for (double i = 30; i < 530; i += 250 / level) {
 		/*draw_barrel(i, LEFT_LANE);
 		draw_barrel(i + 100, RIGHT_LANE);*/
 		draw_barrel(i, lanes_random_number[(int)i % 19 + 1]);
@@ -468,7 +479,7 @@ void myDisplay(void)
 	std::sort(obstacles, obstacles + obstacles_index, &obstacles_sorter);
 
 	//drawing Beach env
-	for (int i = 0; i < 5; i++){
+	for (int i = 0; i < 5; i++) {
 		glPushMatrix();
 
 		// Draw Ground
@@ -481,7 +492,7 @@ void myDisplay(void)
 
 
 		//draw Street
-		for (double j = -0.6; j < 1.6; j++){
+		for (double j = -0.6; j < 1.6; j++) {
 			glPushMatrix();
 			glRotated(45, 0, 1, 0);
 			glTranslated(0, 0, j * 20 + i * 50);
@@ -494,7 +505,7 @@ void myDisplay(void)
 
 
 
-		for (int j = 0; j < rand_trees_num; j++){
+		for (int j = 0; j < rand_trees_num; j++) {
 			// Draw umbrella Model
 			glPushMatrix();
 			glTranslated(i * 40 + -j * 10, 0, i * 40 + -j * 10);
@@ -513,7 +524,7 @@ void myDisplay(void)
 		// Draw boat Model
 		glPushMatrix();
 		glTranslated(i * 30, 0, i * 30);
-		glTranslated(13, 0, 0);//bring house left of the road
+		glTranslated(10, 0, 0);//bring house left of the road
 		glScaled(0.5, 0.5, 0.5);
 		model_boat.Draw();
 		glPopMatrix();
@@ -526,7 +537,7 @@ void myDisplay(void)
 	}
 
 	//drawing Farm env
-	for (double i = 5.6; i < 9.6; i += 1.6){
+	for (double i = 5.6; i < 9.6; i += 1.6) {
 		glPushMatrix();
 
 		// Draw Ground
@@ -549,7 +560,7 @@ void myDisplay(void)
 		glPopMatrix();
 
 
-		for (int j = 0; j < rand_trees_num; j++){
+		for (int j = 0; j < rand_trees_num; j++) {
 			// Draw Tree Model
 			glPushMatrix();
 			glTranslated(i * 35 + -j * 10, 0, i * 35 + -j * 10);
@@ -582,7 +593,7 @@ void myDisplay(void)
 
 
 	//drawing City env
-	for (double i = 10.3; i < 15.3; i += 1.3){
+	for (double i = 10.3; i < 18.3; i += 1.3) {
 		glPushMatrix();
 
 		// Draw Ground
@@ -630,6 +641,17 @@ void myDisplay(void)
 		glPopMatrix();
 
 	}
+	//race end 
+	glPushMatrix();
+	glRotated(45, 0, 1, 0);
+	glTranslated(0, 0, 760);
+	glScaled(7 * 2.5, 1, 20);
+	//glScaled(7, 1, 40);
+	glTranslated(-0.5, 0.3, -0.5);
+	drawWall(0.1, tex_race_end, 1);//street
+	glPopMatrix();
+
+
 
 	////drawing last Beach env
 	//for (double i = 15.8; i < 18; i++){
@@ -692,15 +714,17 @@ void myDisplay(void)
 
 
 
-	// Draw car Model
+				   // Draw car Model
 	glPushMatrix();
 	glScalef(0.5f, 0.5f, 0.5f);
 	glRotated(45, 0, 1, 0);
 	glTranslatef(DEFAULT_CAR_DISP + carLRDisp, 0.0f, 0.0f);
 	if (speed > 0)
-			glRotatef(carRotationAngle, 0, 1, 0);
+		glRotatef(carRotationAngle, 0, 1, 0);
 	car.drawCar();
 	glPopMatrix();
+
+
 
 
 	//sky box
@@ -731,21 +755,20 @@ void myDisplay(void)
 //=======================================================================
 void ground_motion(int val)//timer animation function, allows the user to pass an integer valu to the timer function.
 {
-	if (speed > 0)
-		speed -= DRAG;
+	speed -= DRAG;
 	if (speed < 0.0f)
 		speed = 0.0f;
 	else
 	{
 		car.setWheelRotation(car.getWheelRotation() + speed*ROTATION_MULTIPLIER);
 	}
-	if (ground < -535){
+	if (ground < -535) {
 		ground = 0;
 		obsIdx = 0;
 		speed = 0;
 		level++;
 		obstacles_index = 0;
-		for (int i = 0; i < 20; i++){
+		for (int i = 0; i < 20; i++) {
 			lanes_random_number[i] = rand() % 4;
 		}
 		//glutTimerFunc(50, ground_motion, 0);
@@ -782,7 +805,7 @@ void camera_motion(int val)//timer animation function, allows the user to pass a
 }
 
 
-void reset_camera_position(){
+void reset_camera_position() {
 	Eye.x = -20;
 	Eye.z = -20;
 
@@ -923,6 +946,7 @@ void LoadAssets()
 	tex_beach.Load("Textures/beach.bmp");
 	tex_street.Load("Textures/street4Lanes.bmp");
 	tex_beach_street.Load("Textures/beach_street.bmp");
+	tex_race_end.Load("Textures/race_end.bmp");
 	loadBMP(&tex, "Textures/sky5-jpg.bmp", true);
 	loadBMP(&tex_boat, "Models/boat/Might be wood.bmp", true);
 }
@@ -930,9 +954,35 @@ void LoadAssets()
 //=======================================================================
 // Animation Functions
 //=======================================================================
+double isGettingDark = 1;
+void sky_animation(int val) {
+	//if (isGettingDark ==1 && light>=0.1){
+	//	light -= 0.0015f;
+	//}
+	//else if (isGettingDark == 0 &&light <= 0.7){
+	//	light += 0.0015f;
+	//}
 
-void sky_animation(int val){
-	sky_theta += 0.1;
+	//if (sky_theta>50 && sky_theta<100){
+	//	isGettingDark = 1;
+	//}
+	//else if (sky_theta>240 && sky_theta<300){
+	//	isGettingDark = 0;
+	//}
+	//else{
+	//	isGettingDark = -1;//off
+	//}
+
+
+	sky_theta = (-ground / 530) * 260;
+	light = 1 - (-ground / 350) * 1;
+	if (light < 0) {
+		light = 0;
+	}
+
+	//sky_theta += 0.1;
+	if (sky_theta > 360)
+		sky_theta = 0;
 	glutPostRedisplay();
 	glutTimerFunc(10, sky_animation, 0);
 }
@@ -961,7 +1011,7 @@ void carControlTimer(int val)
 	}
 	if (leftTurn)
 	{
-		carLRDisp += 0.3f * speed;
+		carLRDisp += 0.24f * speed;
 		if (carLRDisp > MAX_CAR_LR_DISP)
 			carLRDisp = MAX_CAR_LR_DISP;
 		if (carRotationAngle < MAX_CAR_ROT_ANGLE - 0.8f)
@@ -969,10 +1019,10 @@ void carControlTimer(int val)
 	}
 	else if (rightTurn)
 	{
-		carLRDisp -= 0.3f * speed;
+		carLRDisp -= 0.24f * speed;
 		if (carLRDisp < -MAX_CAR_LR_DISP)
 			carLRDisp = -MAX_CAR_LR_DISP;
-		if(carRotationAngle > -MAX_CAR_ROT_ANGLE + 0.8f)
+		if (carRotationAngle > -MAX_CAR_ROT_ANGLE + 0.8f)
 			carRotationAngle -= 0.8f;
 	}
 	glutTimerFunc(100, carControlTimer, 0);
@@ -1012,19 +1062,19 @@ void collisionDetection(int in)
 {
 	float sqr = sqrt(2);
 	float carFront = (-ground*sqr) + CAR_LENGTH / 4;
-	float carBack = carFront - CAR_LENGTH/2;
+	float carBack = carFront - CAR_LENGTH / 2;
 	while (obstacles[obsIdx].z < carBack)
 		obsIdx++;
 	float carLeft = ((DEFAULT_CAR_DISP + carLRDisp)) / 2;
-	float carRight = (carLeft - CAR_WIDTH/2);
+	float carRight = (carLeft - CAR_WIDTH / 2);
 
-	for (int i = obsIdx; i <= obsIdx+NUM_SCAN_OBS; i++)
+	for (int i = obsIdx; i <= obsIdx + NUM_SCAN_OBS; i++)
 	{
 		float obsZ = obstacles[i].z;
 		if (obsZ == 0.0f)
 			continue;
 		float obsX = obstacles[i].x;
-		
+
 		if (obsZ <= carFront && obsZ >= carBack && obsX <= carLeft && obsX >= carRight)
 		{
 			//collision
@@ -1070,7 +1120,7 @@ void specialkeyUpFunc(int key, int x, int y)
 //=======================================================================
 void main(int argc, char** argv)
 {
-	for (int i = 0; i < 20; i++){
+	for (int i = 0; i < 20; i++) {
 		lanes_random_number[i] = rand() % 4;
 	}
 
