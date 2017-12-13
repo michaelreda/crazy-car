@@ -10,6 +10,8 @@
 int WIDTH = 1280;
 int HEIGHT = 720;
 
+double first_view = false;
+double camera_alpha = -90.3;
 
 double time = 0;
 float light = 0.7f;
@@ -837,15 +839,65 @@ void reset_camera_position() {
 //=======================================================================
 // Keyboard Function
 //=======================================================================
+
 void myKeyboard(unsigned char button, int x, int y)
 {
 	switch (button)
 	{
 
 	case '1':
-		Eye.x = -15; Eye.y = 3;Eye.z=-15;
-		At.x = -20; At.y = 3; At.z = -20;
+		if (!first_view){
+			Eye.x = 0.55; Eye.y = 2; Eye.z = 0.55;
+			At.x = zFar; At.z = zFar;
+			glLoadIdentity();	//Clear Model_View Matrix
+			gluLookAt(Eye.x, Eye.y, Eye.z, At.x, At.y, At.z, Up.x, Up.y, Up.z);	//Setup Camera with modified paramters
+		}
+		first_view = true;
+		break;
+	case '3':
+		first_view = false;
+		At.x = zFar; At.z = zFar;
+		Eye.x = -20; Eye.y = 5; Eye.z = -20;
+		glLoadIdentity();	//Clear Model_View Matrix
 		gluLookAt(Eye.x, Eye.y, Eye.z, At.x, At.y, At.z, Up.x, Up.y, Up.z);	//Setup Camera with modified paramters
+		break;
+	case '+':
+		if (!first_view){
+
+			At.x = 5; At.z = 5;
+
+			if (camera_alpha > -88.8){
+				break;
+			}
+
+
+			int r = 15;
+			camera_alpha += 0.02;
+			Eye.x = r*sin(camera_alpha) + 1;
+			Eye.z = r*cos(camera_alpha) + 1;
+			/*Eye.z += 0.2;
+			At.x = 5; At.z = 5;*/
+			glLoadIdentity();	//Clear Model_View Matrix
+			gluLookAt(Eye.x, Eye.y, Eye.z, At.x, At.y, At.z, Up.x, Up.y, Up.z);	//Setup Camera with modified paramters
+		}
+		break;
+	case '-':
+		if (!first_view){
+			//Eye.x += 0.2;
+			At.x = 5; At.z = 5;
+			
+			if (camera_alpha < -91.8){
+				break;
+			}
+
+			int r = 15;
+			camera_alpha -= 0.02;
+			Eye.x = r*sin(camera_alpha) + 1;
+			Eye.z = r*cos(camera_alpha) + 1;
+
+			glLoadIdentity();	//Clear Model_View Matrix
+			gluLookAt(Eye.x, Eye.y, Eye.z, At.x, At.y, At.z, Up.x, Up.y, Up.z);	//Setup Camera with modified paramters
+		}
 		break;
 	case 'g':
 		glutTimerFunc(0, ground_motion, 0);
