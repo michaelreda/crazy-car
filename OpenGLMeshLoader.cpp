@@ -1160,6 +1160,7 @@ void largeObject()
 	ground = 0;
 	carLRDisp = 0;
 	speed = 0;
+	obsIdx = 0;
 
 	if (car_status == 0)
 	{
