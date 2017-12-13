@@ -12,7 +12,6 @@ int HEIGHT = 720;
 
 
 double time = 0;
-float light = 0.7f;
 
 int* lanes_random_number = new int[20];
 
@@ -87,7 +86,6 @@ GLTexture tex_city;
 GLTexture tex_beach;
 GLTexture tex_beach_street;
 GLTexture tex_street;
-GLTexture tex_race_end;
 
 //variables
 double ground;
@@ -109,7 +107,6 @@ float carRotationAngle = 0.0f;
 //=======================================================================
 // Lighting Configuration Function
 //=======================================================================
-
 void InitLightSource()
 {
 	// Enable Lighting for this OpenGL Program
@@ -118,7 +115,6 @@ void InitLightSource()
 	// Enable Light Source number 0
 	// OpengL has 8 light sources
 	glEnable(GL_LIGHT0);
-
 
 	// Define Light source 0 ambient light
 	GLfloat ambient[] = { 0.1f, 0.1f, 0.1, 1.0f };
@@ -201,7 +197,7 @@ void myInit(void)
 //=======================================================================
 void RenderGround(GLTexture groundTex)
 {
-	//glDisable(GL_LIGHTING);	// Disable lighting 
+	glDisable(GL_LIGHTING);	// Disable lighting 
 
 	glColor3f(0.6, 0.6, 0.6);	// Dim the ground texture a bit
 
@@ -223,7 +219,7 @@ void RenderGround(GLTexture groundTex)
 	glEnd();
 	glPopMatrix();
 
-	//glEnable(GL_LIGHTING);	// Enable lighting again for other entites coming throung the pipeline.
+	glEnable(GL_LIGHTING);	// Enable lighting again for other entites coming throung the pipeline.
 
 	glColor3f(1, 1, 1);	// Set material back to white instead of grey used for the ground texture.
 }
@@ -231,7 +227,7 @@ void RenderGround(GLTexture groundTex)
 
 void drawCube(double length, GLTexture texture, double texture_width){
 
-	//glDisable(GL_LIGHTING);	// Disable lighting 
+	glDisable(GL_LIGHTING);	// Disable lighting 
 
 	glColor3f(0.6, 0.6, 0.6);	// Dim the ground texture a bit
 
@@ -285,7 +281,7 @@ void drawCube(double length, GLTexture texture, double texture_width){
 
 
 
-	//glEnable(GL_LIGHTING);	// Enable lighting again for other entites coming throung the pipeline.
+	glEnable(GL_LIGHTING);	// Enable lighting again for other entites coming throung the pipeline.
 
 	glColor3f(1, 1, 1);	// Set material back to white instead of grey used for the ground texture.
 }
@@ -313,8 +309,6 @@ void drawWall(double thickness, GLTexture texture, double texture_width) {
 //text function
 void drawBitmapText(char *string, float x, float y, float z)
 {
-	glDisable(GL_LIGHTING);
-	//glColor3d(1, 1, 1);
 	char *c;
 	glRasterPos3f(x, y, z);
 
@@ -322,7 +316,6 @@ void drawBitmapText(char *string, float x, float y, float z)
 	{
 		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);
 	}
-	glEnable(GL_LIGHTING);
 }
 
 //=======================================================================
@@ -401,7 +394,6 @@ int rand_trees_num = rand() % 2 + 2;
 int car_status = 5;
 double sky_theta = 0;
 
-
 void myDisplay(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -409,23 +401,20 @@ void myDisplay(void)
 	obstacles_index = 0;
 
 
-	GLfloat lightSpecular[] = { light, light, light, light };
-	glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
-	GLfloat lightDiffuse[] = { light, light, light, light };
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
-	GLfloat lightIntensity[] = { light, light, light, light };
+
+	GLfloat lightIntensity[] = { 0.7, 0.7, 0.7, 1.0f };
 	GLfloat lightPosition[] = { 0.0f, 100.0f, 0.0f, 0.0f };
 	glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
 	glLightfv(GL_LIGHT0, GL_AMBIENT, lightIntensity);
 
 	//draw Time
 	glPushMatrix();
-
-		glTranslated(-5.5, 0, 5.5);//place it right
-		char timestr[512];
-		sprintf(timestr, "Time: %g s", time);//converts double to string
-		drawBitmapText(timestr, Eye.x + 10, 0, Eye.z + 10); // moves with the camera
-	
+	//glColor3d(1, 1, 1);
+	glTranslated(-5.5, 0, 5.5);//place it right
+	char timestr[512];
+	sprintf(timestr, "Time: %g s", time);//converts double to string
+	//sprintf(timestr, "Ground: %g s", ground);//converts double to string
+	drawBitmapText(timestr, Eye.x + 10, 0, Eye.z + 10); // moves with the camera
 	glPopMatrix();
 
 	//draw Level
@@ -442,8 +431,7 @@ void myDisplay(void)
 	//glColor3d(1, 1, 1);
 	glTranslated(5.5, 0, -5.5);//place it right
 	char statusStr[512];
-	//sprintf(statusStr, "Car Status: %d Car Speed: %d Km/h", car_status, (int)(speed * 10));//converts double to string
-	sprintf(statusStr, "Light: %f sky_theta: %g Km/h", light, sky_theta);//converts double to string
+	sprintf(statusStr, "Car Status: %d Car Speed: %d Km/h", car_status, (int)(speed * 10));//converts double to string
 	drawBitmapText(statusStr, Eye.x + 10, 0, Eye.z + 10); // moves with the camera
 	glPopMatrix();
 
@@ -594,7 +582,7 @@ void myDisplay(void)
 
 
 	//drawing City env
-	for (double i = 10.3; i < 18.3; i += 1.3){
+	for (double i = 10.3; i < 15.3; i += 1.3){
 		glPushMatrix();
 
 		// Draw Ground
@@ -642,17 +630,6 @@ void myDisplay(void)
 		glPopMatrix();
 
 	}
-	//race end 
-	glPushMatrix();
-		glRotated(45, 0, 1, 0);
-		glTranslated(0, 0,760);
-		glScaled(7*2.5, 1, 20);
-		//glScaled(7, 1, 40);
-		glTranslated(-0.5, 0.3, -0.5);
-		drawWall(0.1, tex_race_end, 1);//street
-	glPopMatrix();
-
-
 
 	////drawing last Beach env
 	//for (double i = 15.8; i < 18; i++){
@@ -946,7 +923,6 @@ void LoadAssets()
 	tex_beach.Load("Textures/beach.bmp");
 	tex_street.Load("Textures/street4Lanes.bmp");
 	tex_beach_street.Load("Textures/beach_street.bmp");
-	tex_race_end.Load("Textures/race_end.bmp");
 	loadBMP(&tex, "Textures/sky5-jpg.bmp", true);
 	loadBMP(&tex_boat, "Models/boat/Might be wood.bmp", true);
 }
@@ -954,35 +930,9 @@ void LoadAssets()
 //=======================================================================
 // Animation Functions
 //=======================================================================
-double isGettingDark = 1;
+
 void sky_animation(int val){
-	//if (isGettingDark ==1 && light>=0.1){
-	//	light -= 0.0015f;
-	//}
-	//else if (isGettingDark == 0 &&light <= 0.7){
-	//	light += 0.0015f;
-	//}
-
-	//if (sky_theta>50 && sky_theta<100){
-	//	isGettingDark = 1;
-	//}
-	//else if (sky_theta>240 && sky_theta<300){
-	//	isGettingDark = 0;
-	//}
-	//else{
-	//	isGettingDark = -1;//off
-	//}
-
-
-	sky_theta = (-ground / 530) * 260;
-	light = 1 - (-ground / 350) * 1;
-	if (light < 0){
-		light = 0;
-	}
-
-	//sky_theta += 0.1;
-	if (sky_theta > 360)
-		sky_theta = 0;
+	sky_theta += 0.1;
 	glutPostRedisplay();
 	glutTimerFunc(10, sky_animation, 0);
 }
