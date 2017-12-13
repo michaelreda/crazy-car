@@ -439,8 +439,8 @@ void myDisplay(void)
 	//glColor3d(1, 1, 1);
 	glTranslated(5.5, 0, -5.5);//place it right
 	char statusStr[512];
-	sprintf(statusStr, "Car Status: %d Car Speed: %d Km/h", car_status, (int)(speed * 10));//converts double to string
-	//sprintf(statusStr, "Light: %f sky_theta: %g Km/h", light, sky_theta);//converts double to string
+	//sprintf(statusStr, "Car Status: %d Car Speed: %d Km/h", car_status, (int)(speed * 10));//converts double to string
+	sprintf(statusStr, "Light: %f sky_theta: %g Km/h", light, sky_theta);//converts double to string
 	drawBitmapText(statusStr, Eye.x + 10, 0, Eye.z + 10); // moves with the camera
 	glPopMatrix();
 
@@ -954,26 +954,31 @@ void LoadAssets()
 //=======================================================================
 double isGettingDark = 1;
 void sky_animation(int val){
-	if (isGettingDark ==1 && light>=0.1){
-		light -= 0.0015f;
-	}
-	else if (isGettingDark == 0 &&light <= 0.7){
-		light += 0.0015f;
+	//if (isGettingDark ==1 && light>=0.1){
+	//	light -= 0.0015f;
+	//}
+	//else if (isGettingDark == 0 &&light <= 0.7){
+	//	light += 0.0015f;
+	//}
+
+	//if (sky_theta>50 && sky_theta<100){
+	//	isGettingDark = 1;
+	//}
+	//else if (sky_theta>240 && sky_theta<300){
+	//	isGettingDark = 0;
+	//}
+	//else{
+	//	isGettingDark = -1;//off
+	//}
+
+
+	sky_theta = (-ground / 530) * 260;
+	light = 1 - (-ground / 350) * 1;
+	if (light < 0){
+		light = 0;
 	}
 
-	if (sky_theta>50 && sky_theta<100){
-		isGettingDark = 1;
-	}
-	else if (sky_theta>240 && sky_theta<300){
-		isGettingDark = 0;
-	}
-	else{
-		isGettingDark = -1;//off
-	}
-
-
-
-	sky_theta += 0.1;
+	//sky_theta += 0.1;
 	if (sky_theta > 360)
 		sky_theta = 0;
 	glutPostRedisplay();
