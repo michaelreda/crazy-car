@@ -39,6 +39,10 @@ void Car::drawCar()
 {
 	glPushMatrix();
 		glPushMatrix();
+			if (this->direction == LEFT)
+				glRotatef(-0.1f, 1.0f, 0.0f, 1.0f);
+			if (this->direction == RIGHT)
+				glRotatef(0.1f, 0.0f, 0.0f, 1.0f);
 			this->carModel.Draw();
 		glPopMatrix();
 		glPushMatrix();//front left wheel
