@@ -355,16 +355,16 @@ void draw_road_cone(double distance, int lane) {
 		obstacles[obstacles_index].x = 6;
 	}
 	else if (lane == CENTER_LEFT_LANE) {
-		glTranslated(3, 0, 0);//bring house left of the road
-		obstacles[obstacles_index].x = 3;
+		glTranslated(2, 0, 0);//bring house left of the road
+		obstacles[obstacles_index].x = 2;
 	}
 	else if (lane == CENTER_RIGHT_LANE) {
-		glTranslated(-3, 0, 0);//bring house left of the road
-		obstacles[obstacles_index].x = -3;
+		glTranslated(-2, 0, 0);//bring house left of the road
+		obstacles[obstacles_index].x = -2;
 	}
 	else if (lane == RIGHT_LANE) {
-		glTranslated(-8, 0, 0);//bring house left of the road
-		obstacles[obstacles_index].x = -8;
+		glTranslated(-6, 0, 0);//bring house left of the road
+		obstacles[obstacles_index].x = -6;
 	}
 	glScaled(0.03, 0.03, 0.03);
 	model_road_cone.Draw();
@@ -378,16 +378,16 @@ void draw_barrel(double distance, int lane) {
 	obstacles[obstacles_index].z = distance;
 	obstacles[obstacles_index].type = 1;
 	if (lane == LEFT_LANE) {
-		glTranslated(5, 0, 0);//bring house left of the road
-		obstacles[obstacles_index].x = 5;
+		glTranslated(6, 0, 0);//bring house left of the road
+		obstacles[obstacles_index].x = 6;
 	}
 	else if (lane == CENTER_LEFT_LANE) {
-		glTranslated(1, 0, 0);//bring house left of the road
-		obstacles[obstacles_index].x = 1;
+		glTranslated(2, 0, 0);//bring house left of the road
+		obstacles[obstacles_index].x = 2;
 	}
 	else if (lane == CENTER_RIGHT_LANE) {
-		glTranslated(-4, 0, 0);//bring house left of the road
-		obstacles[obstacles_index].x = -4;
+		glTranslated(-2, 0, 0);//bring house left of the road
+		obstacles[obstacles_index].x = -2;
 	}
 	else if (lane == RIGHT_LANE) {
 		glTranslated(-6, 0, 0);//bring house left of the road
