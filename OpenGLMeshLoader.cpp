@@ -6,6 +6,7 @@
 #include <algorithm>
 
 
+
 int WIDTH = 1280;
 int HEIGHT = 720;
 
@@ -63,7 +64,7 @@ public:
 	}
 };
 
-Vector Eye(-20, 5, -20);
+Vector Eye(-15, 5, -15);
 Vector At(zFar, 0, zFar);
 Vector Up(0, 1, 0);
 
@@ -441,8 +442,8 @@ void myDisplay(void)
 	//glColor3d(1, 1, 1);
 	glTranslated(5.5, 0, -5.5);//place it right
 	char statusStr[512];
-	//sprintf(statusStr, "Car Status: %d Car Speed: %d Km/h", car_status, (int)(speed * 10));//converts double to string
-	sprintf(statusStr, "Light: %f sky_theta: %g Km/h", light, sky_theta);//converts double to string
+	sprintf(statusStr, "Car Status: %d Car Speed: %d Km/h", car_status, (int)(speed * 10));//converts double to string
+	//sprintf(statusStr, "Light: %f sky_theta: %g Km/h", light, sky_theta);//converts double to string
 	drawBitmapText(statusStr, Eye.x + 10, 0, Eye.z + 10); // moves with the camera
 	glPopMatrix();
 
@@ -830,6 +831,11 @@ void myKeyboard(unsigned char button, int x, int y)
 	switch (button)
 	{
 
+	case '1':
+		Eye.x = -15; Eye.y = 3;Eye.z=-15;
+		At.x = -20; At.y = 3; At.z = -20;
+		gluLookAt(Eye.x, Eye.y, Eye.z, At.x, At.y, At.z, Up.x, Up.y, Up.z);	//Setup Camera with modified paramters
+		break;
 	case 'g':
 		glutTimerFunc(0, ground_motion, 0);
 		break;
@@ -1027,17 +1033,28 @@ void carControlTimer(int val)
 	glutTimerFunc(100, carControlTimer, 0);
 }
 
+bool car_motor_sound = false;
+bool car_brakes_sound = false;
+
 void SpecialInput(int key, int x, int y)
 {
 	switch (key)
 	{
 	case GLUT_KEY_UP:
 	{
+		if (!car_motor_sound){
+			car_motor_sound = true;
+			PlaySound(TEXT("sounds/car_motor.wav"), NULL, SND_ASYNC | SND_LOOP);
+		}
 		accelerating = true;
 	}
 	break;
 	case GLUT_KEY_DOWN:
 	{
+		if (!car_brakes_sound){
+			car_brakes_sound = true;
+			PlaySound(TEXT("sounds/car_brakes.wav"), NULL, SND_FILENAME | SND_ASYNC);
+		}
 		braking = true;
 	}
 	break;
@@ -1120,11 +1137,15 @@ void specialkeyUpFunc(int key, int x, int y)
 	{
 	case GLUT_KEY_UP:
 	{
+		//PlaySound(TEXT("sounds/car_motor.wav"), NULL, SND_APPLICATION);
+		PlaySound(NULL, NULL, 0);
+		car_motor_sound = false;
 		accelerating = false;
 	}
 	break;
 	case GLUT_KEY_DOWN:
 	{
+		car_brakes_sound = false;
 		braking = false;
 	}
 	break;
