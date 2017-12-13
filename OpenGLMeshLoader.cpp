@@ -865,7 +865,7 @@ void myKeyboard(unsigned char button, int x, int y)
 	{
 		first_view = false;
 		At.x = zFar; At.z = zFar;
-		Eye.x = -20; Eye.y = 5; Eye.z = -20;
+		Eye.x = -15; Eye.y = 5; Eye.z = -15;
 		glLoadIdentity();	//Clear Model_View Matrix
 		gluLookAt(Eye.x, Eye.y, Eye.z, At.x, At.y, At.z, Up.x, Up.y, Up.z);	//Setup Camera with modified paramters
 	}  break;
