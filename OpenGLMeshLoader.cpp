@@ -1053,7 +1053,8 @@ void SpecialInput(int key, int x, int y)
 	{
 		if (!car_brakes_sound){
 			car_brakes_sound = true;
-			PlaySound(TEXT("sounds/car_brakes.wav"), NULL, SND_FILENAME | SND_ASYNC);
+			if (speed !=0)
+				PlaySound(TEXT("sounds/car_brakes.wav"), NULL, SND_FILENAME | SND_ASYNC);
 		}
 		braking = true;
 	}
