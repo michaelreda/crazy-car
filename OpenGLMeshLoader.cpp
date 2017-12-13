@@ -644,12 +644,14 @@ void myDisplay(void)
 	}
 	//race end 
 	glPushMatrix();
+	glDisable(GL_LIGHTING);
 	glRotated(45, 0, 1, 0);
 	glTranslated(0, 0, 760);
 	glScaled(7 * 2.5, 1, 20);
 	//glScaled(7, 1, 40);
 	glTranslated(-0.5, 0.3, -0.5);
 	drawWall(0.1, tex_race_end, 1);//street
+	glEnable(GL_LIGHTING);
 	glPopMatrix();
 
 
