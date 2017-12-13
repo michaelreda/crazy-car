@@ -1101,6 +1101,8 @@ void powerUp()
 	MAX_SPEED = 5.0f;
 	glutTimerFunc(2500, restoreSpeed, 0);
 }
+
+boolean car_crash_sound = false;
 void collisionDetection(int in)
 {
 	float sqr = sqrt(2);
@@ -1123,8 +1125,10 @@ void collisionDetection(int in)
 			//time = 0;
 			if (obstacles[i].type == 0)
 				powerUp();
-			else if (obstacles[i].type == 1)
+			else if (obstacles[i].type == 1){
 				largeObject();
+				PlaySound(TEXT("sounds/car_crash.wav"), NULL, SND_FILENAME | SND_ASYNC);
+			}
 			else if (obstacles[i].type == 2)
 				smallObject();
 		}
