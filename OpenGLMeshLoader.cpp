@@ -326,7 +326,10 @@ void drawWall(double thickness, GLTexture texture, double texture_width) {
 void drawBitmapText(char *string, float x, float y, float z)
 {
 	glDisable(GL_LIGHTING);
-	//glColor3d(1, 1, 1);
+	glPushMatrix();
+	glLoadIdentity();
+	glColor3f(1.0f, 0.0f, 0.0f);//needs to be called before RasterPos
+	glRasterPos2i(10, 10);
 	char *c;
 	glRasterPos3f(x, y, z);
 
@@ -334,7 +337,32 @@ void drawBitmapText(char *string, float x, float y, float z)
 	{
 		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);
 	}
+	glPopMatrix();
 	glEnable(GL_LIGHTING);
+}
+void drawBitmapText2D(char *string, float x, float y)
+{
+	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_LIGHTING);
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+	gluOrtho2D(0.0, WIDTH, 0.0, HEIGHT);
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
+	glRasterPos2i(x, y);
+	char *c;
+	for (c = string; *c != '\0'; c++)
+	{
+		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);
+	}
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+	glMatrixMode(GL_MODELVIEW);
+	glPopMatrix();
+	glEnable(GL_LIGHTING);
+	glEnable(GL_TEXTURE_2D);
 }
 
 //=======================================================================
@@ -438,7 +466,7 @@ bool obstacles_sorter(Obstacle const& lhs, Obstacle const& rhs) {
 	return lhs.z < rhs.z;
 }
 
-int level = 2;
+int level = 1;
 int rand_trees_num = rand() % 2 + 2;
 int car_status = 5;
 double sky_theta = 0;
@@ -464,10 +492,11 @@ void myDisplay(void)
 	//draw Time
 	glPushMatrix();
 
-	glTranslated(-5.5, 0, 5.5);//place it right
+	//glTranslated(-5.5, 0, 5.5);//place it right
 	char timestr[512];
 	sprintf(timestr, "Time: %g s", time);//converts double to string
-	drawBitmapText(timestr, Eye.x + 10, 0, Eye.z + 10); // moves with the camera
+	//drawBitmapText(timestr, Eye.x + 10, 0, Eye.z + 10); // moves with the camera
+	drawBitmapText2D(timestr, WIDTH-140, 10); // moves with the camera
 
 	glPopMatrix();
 
@@ -476,18 +505,17 @@ void myDisplay(void)
 	//glColor3d(1, 1, 1);
 	char levelstr[512];
 	sprintf(levelstr, "Level: %d", level);//converts double to string
-	drawBitmapText(levelstr, 540, 0, 540 - 40); // moves with the camera
+	drawBitmapText2D(levelstr, (WIDTH / 2)-50, 10); // moves with the camera
 	glPopMatrix();
 
 
 	//draw Car Status
 	glPushMatrix();
 	//glColor3d(1, 1, 1);
-	glTranslated(5.5, 0, -5.5);//place it right
 	char statusStr[512];
 	sprintf(statusStr, "Car Status: %d Car Speed: %d Km/h", car_status, (int)(speed * 10));//converts double to string
 	//sprintf(statusStr, "Light: %f sky_theta: %g Km/h", light, sky_theta);//converts double to string
-	drawBitmapText(statusStr, Eye.x + 10, 0, Eye.z + 10); // moves with the camera
+	drawBitmapText2D(statusStr, 10, 10); // moves with the camera
 	glPopMatrix();
 
 
@@ -828,7 +856,7 @@ void ground_motion(int val)//timer animation function, allows the user to pass a
 	ground -= speed;
 
 	//glutPostRedisplay();						// redraw 		
-	glutTimerFunc(50, ground_motion, 0);					//recall the time function after 1000 ms and pass a zero value as an input to the time func.
+	glutTimerFunc(15, ground_motion, 0);					//recall the time function after 1000 ms and pass a zero value as an input to the time func.
 }
 
 //=======================================================================
@@ -1155,7 +1183,7 @@ void carControlTimer(int val)
 			carRotationAngle -= 0.8f;
 		firstPersonCamera();
 	}
-	glutTimerFunc(30, carControlTimer, 0);
+	glutTimerFunc(15, carControlTimer, 0);
 }
 
 bool car_motor_sound = false;
@@ -1333,14 +1361,14 @@ void main(int argc, char** argv)
 
 	glutMouseFunc(myMouse);
 
-	glutReshapeFunc(myReshape);
+	//glutReshapeFunc(myReshape);
 
 	glutSpecialFunc(SpecialInput);
 
 	glutTimerFunc(0, time_counter, 0);
 	glutTimerFunc(0, sky_animation, 0);
-	glutTimerFunc(50, ground_motion, 0);
-	glutTimerFunc(30, carControlTimer, 0);
+	glutTimerFunc(10, ground_motion, 0);
+	glutTimerFunc(15, carControlTimer, 0);
 	glutTimerFunc(50, collisionDetection, 0);
 	glutTimerFunc(0, animate, 0);
 	glutSpecialUpFunc(specialkeyUpFunc);
