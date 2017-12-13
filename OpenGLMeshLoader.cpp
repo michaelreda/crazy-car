@@ -82,6 +82,7 @@ Model_3DS model_umbrella;
 Model_3DS model_road_cone;
 Model_3DS model_barrel;
 Model_3DS model_building;
+Model_3DS model_man;
 
 // Textures
 GLTexture tex_farm;
@@ -398,6 +399,35 @@ void draw_barrel(double distance, int lane) {
 	glPopMatrix();
 }
 
+void draw_man(double distance, int lane) {
+	glPushMatrix();
+		glRotatef(45, 0, 1, 0);
+		glTranslated(0, 0, distance);
+
+		obstacles[obstacles_index].z = distance;
+		obstacles[obstacles_index].type = 3;
+		if (lane == LEFT_LANE) {
+			glTranslated(6, 0, 0);//bring house left of the road
+			obstacles[obstacles_index].x = 6;
+		}
+		else if (lane == CENTER_LEFT_LANE) {
+			glTranslated(2, 0, 0);//bring house left of the road
+			obstacles[obstacles_index].x = 2;
+		}
+		else if (lane == CENTER_RIGHT_LANE) {
+			glTranslated(-2, 0, 0);//bring house left of the road
+			obstacles[obstacles_index].x = -2;
+		}
+		else if (lane == RIGHT_LANE) {
+			glTranslated(-6, 0, 0);//bring house left of the road
+			obstacles[obstacles_index].x = -6;
+		}
+
+		glScaled(2, 2, 2);
+		model_man.Draw();
+	glPopMatrix();
+}
+
 
 //=======================================================================
 // Display Function
@@ -411,7 +441,8 @@ int level = 2;
 int rand_trees_num = rand() % 2 + 2;
 int car_status = 5;
 double sky_theta = 0;
-
+double random_man_distance = rand() % 600 + 50;
+double random_man_lane = rand() % 4;
 
 void myDisplay(void)
 {
@@ -469,6 +500,8 @@ void myDisplay(void)
 
 	//obstacles
 	glPushMatrix();
+
+	draw_man((int)(random_man_distance*level) % 650+50, (int)(random_man_lane*level) % 4);
 
 	for (double i = 50; i < 750; i += 200 / level) {
 		/*draw_road_cone(i, LEFT_LANE);
@@ -864,15 +897,15 @@ void myKeyboard(unsigned char button, int x, int y)
 	case '3':
 	{
 		first_view = false;
-		At.x = zFar; At.z = zFar;
-		Eye.x = -15; Eye.y = 5; Eye.z = -15;
+		At.x = 5; At.z = 5;
+		Eye.x = -9; Eye.y = 5; Eye.z = -9;
 		glLoadIdentity();	//Clear Model_View Matrix
 		gluLookAt(Eye.x, Eye.y, Eye.z, At.x, At.y, At.z, Up.x, Up.y, Up.z);	//Setup Camera with modified paramters
 	}  break;
 	case '+':
 		if (!first_view){
 
-			At.x = 5; At.z = 5;
+			//At.x = 5; At.z = 5;
 
 			if (camera_alpha > -88.8){
 				break;
@@ -892,7 +925,7 @@ void myKeyboard(unsigned char button, int x, int y)
 	case '-':
 		if (!first_view){
 			//Eye.x += 0.2;
-			At.x = 5; At.z = 5;
+			//At.x = 5; At.z = 5;
 			
 			if (camera_alpha < -91.8){
 				break;
@@ -1024,6 +1057,7 @@ void LoadAssets()
 	model_building.Load("Models/skyA.3ds");
 	model_car.Load("Models/car/car2.3ds");
 	model_wheel.Load("Models/wheel/wheel4.3ds");
+	model_man.Load("Models/human/man.3ds");
 	car = Car(model_car, model_wheel, 3.0f, 0.082f);
 
 	// Loading texture files
