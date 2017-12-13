@@ -458,7 +458,7 @@ void myDisplay(void)
 	//obstacles
 	glPushMatrix();
 
-	for (double i = 50; i < 530; i += 200 / level) {
+	for (double i = 50; i < 750; i += 200 / level) {
 		/*draw_road_cone(i, LEFT_LANE);
 		draw_road_cone(i+100, RIGHT_LANE);
 		draw_road_cone(i, CENTER_LEFT_LANE);
@@ -467,7 +467,7 @@ void myDisplay(void)
 		obstacles_index++;
 	}
 
-	for (double i = 30; i < 530; i += 250 / level) {
+	for (double i = 30; i < 750; i += 250 / level) {
 		/*draw_barrel(i, LEFT_LANE);
 		draw_barrel(i + 100, RIGHT_LANE);*/
 		draw_barrel(i, lanes_random_number[(int)i % 19 + 1]);
@@ -734,6 +734,7 @@ void myDisplay(void)
 	qobj = gluNewQuadric();
 	//glTranslated(50,0,0);
 	glRotated(sky_theta, 1, 0, 0);
+	glRotated(30, 1, 0, 0);
 	glRotated(180, 0, 1, 0);
 	//glRotated(90, 1, 0, 1);
 	glBindTexture(GL_TEXTURE_2D, tex);
@@ -974,7 +975,7 @@ void sky_animation(int val) {
 	//}
 
 
-	sky_theta = (-ground / 530) * 260;
+	sky_theta = (-ground / 530) * 80;
 	light = 1 - (-ground / 350) * 1;
 	if (light < 0) {
 		light = 0;
