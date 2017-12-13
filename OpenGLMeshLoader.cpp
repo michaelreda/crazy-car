@@ -66,8 +66,8 @@ public:
 	}
 };
 
-Vector Eye(-15, 5, -15);
-Vector At(zFar, 0, zFar);
+Vector Eye(-10, 5, -10);
+Vector At(5, 0, 5);
 Vector Up(0, 1, 0);
 
 int cameraZoom = 0;
@@ -509,14 +509,14 @@ void myDisplay(void)
 		draw_road_cone(i+100, RIGHT_LANE);
 		draw_road_cone(i, CENTER_LEFT_LANE);
 		draw_road_cone(i + 100, CENTER_RIGHT_LANE);*/
-		draw_road_cone(i, lanes_random_number[(int)i % 20]);
+		draw_road_cone(i, lanes_random_number[(int)obstacles_index % 20]);
 		obstacles_index++;
 	}
 
 	for (double i = 30; i < 750; i += 250 / level) {
 		/*draw_barrel(i, LEFT_LANE);
 		draw_barrel(i + 100, RIGHT_LANE);*/
-		draw_barrel(i, lanes_random_number[(int)i % 19 + 1]);
+		draw_barrel(i, lanes_random_number[(int)obstacles_index % 19 + 1]);
 		obstacles_index++;
 	}
 	glPopMatrix();
