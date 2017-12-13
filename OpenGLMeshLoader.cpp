@@ -3,6 +3,7 @@
 #include "GLTexture.h"
 #include <glut.h>
 #include "Car.h"
+#include <math.h>
 #include <algorithm>
 
 
@@ -25,8 +26,8 @@ Obstacle obstacles[1000];
 int obsIdx = 0;
 
 #define NUM_SCAN_OBS 3
-#define CAR_LENGTH 6.5f
-#define CAR_WIDTH 2.5f
+#define CAR_LENGTH 13.0f
+#define CAR_WIDTH 5.0f
 #define CENTER_LEFT_LANE 0
 #define LEFT_LANE 1
 #define CENTER_RIGHT_LANE 2
@@ -326,25 +327,26 @@ int obstacles_index = 0;
 
 void draw_road_cone(double distance, int lane){
 	glPushMatrix();
-	glTranslated(distance, 0, distance);
+	glRotatef(45, 0, 1, 0);
+	glTranslated(0, 0, distance);
 	
 	obstacles[obstacles_index].z = distance;
 	obstacles[obstacles_index].type = 2;
 	if (lane == LEFT_LANE){
-		glTranslated(8, 0, 0);//bring house left of the road
-		obstacles[obstacles_index].x = distance + 8;
+		glTranslated(6, 0, 0);//bring house left of the road
+		obstacles[obstacles_index].x = 6;
 	}
 	else if (lane == CENTER_LEFT_LANE){
 		glTranslated(3, 0, 0);//bring house left of the road
-		obstacles[obstacles_index].x = distance + 3;
+		obstacles[obstacles_index].x = 3;
 	}
 	else if (lane == CENTER_RIGHT_LANE){
 		glTranslated(-3, 0, 0);//bring house left of the road
-		obstacles[obstacles_index].x = distance - 3;
+		obstacles[obstacles_index].x = -3;
 	}
 	else if (lane == RIGHT_LANE){
 		glTranslated(-8, 0, 0);//bring house left of the road
-		obstacles[obstacles_index].x = distance - 8;
+		obstacles[obstacles_index].x = -8;
 	}
 	glScaled(0.03, 0.03, 0.03);
 	model_road_cone.Draw();
@@ -353,24 +355,25 @@ void draw_road_cone(double distance, int lane){
 
 void draw_barrel(double distance, int lane){
 	glPushMatrix();
-	glTranslated(distance, 0, distance);
+	glRotatef(45, 0, 1, 0);
+	glTranslated(0, 0, distance);
 	obstacles[obstacles_index].z = distance;
 	obstacles[obstacles_index].type = 1;
 	if (lane == LEFT_LANE){
 		glTranslated(5, 0, 0);//bring house left of the road
-		obstacles[obstacles_index].x = distance + 5;
+		obstacles[obstacles_index].x = 5;
 	}
 	else if (lane == CENTER_LEFT_LANE){
 		glTranslated(1, 0, 0);//bring house left of the road
-		obstacles[obstacles_index].x = distance + 1;
+		obstacles[obstacles_index].x = 1;
 	}
 	else if (lane == CENTER_RIGHT_LANE){
 		glTranslated(-4, 0, 0);//bring house left of the road
-		obstacles[obstacles_index].x = distance - 4;
+		obstacles[obstacles_index].x = -4;
 	}
 	else if (lane == RIGHT_LANE){
-		glTranslated(-9, 0, 0);//bring house left of the road
-		obstacles[obstacles_index].x = distance - 9;
+		glTranslated(-6, 0, 0);//bring house left of the road
+		obstacles[obstacles_index].x = -6;
 	}
 	glTranslated(0, -1, 0);
 	glScaled(0.02, 0.02, 0.02);
@@ -510,7 +513,7 @@ void myDisplay(void)
 		// Draw boat Model
 		glPushMatrix();
 		glTranslated(i * 30, 0, i * 30);
-		glTranslated(10, 0, 0);//bring house left of the road
+		glTranslated(13, 0, 0);//bring house left of the road
 		glScaled(0.5, 0.5, 0.5);
 		model_boat.Draw();
 		glPopMatrix();
@@ -700,8 +703,6 @@ void myDisplay(void)
 	glPopMatrix();
 
 
-
-
 	//sky box
 	glPushMatrix();
 
@@ -730,7 +731,8 @@ void myDisplay(void)
 //=======================================================================
 void ground_motion(int val)//timer animation function, allows the user to pass an integer valu to the timer function.
 {
-	speed -= DRAG;
+	if (speed > 0)
+		speed -= DRAG;
 	if (speed < 0.0f)
 		speed = 0.0f;
 	else
@@ -959,7 +961,7 @@ void carControlTimer(int val)
 	}
 	if (leftTurn)
 	{
-		carLRDisp += 0.24f * speed;
+		carLRDisp += 0.3f * speed;
 		if (carLRDisp > MAX_CAR_LR_DISP)
 			carLRDisp = MAX_CAR_LR_DISP;
 		if (carRotationAngle < MAX_CAR_ROT_ANGLE - 0.8f)
@@ -967,7 +969,7 @@ void carControlTimer(int val)
 	}
 	else if (rightTurn)
 	{
-		carLRDisp -= 0.24f * speed;
+		carLRDisp -= 0.3f * speed;
 		if (carLRDisp < -MAX_CAR_LR_DISP)
 			carLRDisp = -MAX_CAR_LR_DISP;
 		if(carRotationAngle > -MAX_CAR_ROT_ANGLE + 0.8f)
@@ -1008,19 +1010,22 @@ void SpecialInput(int key, int x, int y)
 }
 void collisionDetection(int in)
 {
-	float carFrontZ = -ground + CAR_LENGTH / 2;
-	float carBackZ = -ground - CAR_LENGTH / 2;
-	while (obstacles[obsIdx+1].z < carBackZ)
+	float sqr = sqrt(2);
+	float carFront = (-ground*sqr) + CAR_LENGTH / 4;
+	float carBack = carFront - CAR_LENGTH/2;
+	while (obstacles[obsIdx].z < carBack)
 		obsIdx++;
-	float carLeft = DEFAULT_CAR_DISP + carLRDisp;
-	float carRight = carLeft - CAR_WIDTH;
+	float carLeft = ((DEFAULT_CAR_DISP + carLRDisp)) / 2;
+	float carRight = (carLeft - CAR_WIDTH/2);
 
-	for (int i = 0; i < NUM_SCAN_OBS; i++)
+	for (int i = obsIdx; i <= obsIdx+NUM_SCAN_OBS; i++)
 	{
-		float obsX = obstacles[obsIdx].x;
-		float obsZ = obstacles[obsIdx].z;
-
-		if (obsZ <= carFrontZ && obsZ >= carBackZ && obsX <= carLeft && obsX >= carRight)
+		float obsZ = obstacles[i].z;
+		if (obsZ == 0.0f)
+			continue;
+		float obsX = obstacles[i].x;
+		
+		if (obsZ <= carFront && obsZ >= carBack && obsX <= carLeft && obsX >= carRight)
 		{
 			//collision
 			time = 0;
