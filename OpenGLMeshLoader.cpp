@@ -12,7 +12,7 @@ int HEIGHT = 720;
 
 double first_view = false;
 double camera_alpha = -90.3;
-
+bool manHit = false;
 double time = 0;
 float light = 0.7f;
 
@@ -424,7 +424,8 @@ void draw_man(double distance, int lane) {
 		}
 
 		glScaled(2, 2, 2);
-		model_man.Draw();
+		if(!manHit)
+			model_man.Draw();
 	glPopMatrix();
 }
 
@@ -812,6 +813,7 @@ void ground_motion(int val)//timer animation function, allows the user to pass a
 		car.setWheelRotation(car.getWheelRotation() + speed*ROTATION_MULTIPLIER);
 	}
 	if (ground < -535) {
+		manHit = false;
 		ground = 0;
 		obsIdx = 0;
 		speed = 0;
@@ -899,7 +901,7 @@ void myKeyboard(unsigned char button, int x, int y)
 	{
 		first_view = false;
 		At.x = zFar; At.z = zFar;
-		Eye.x = -15; Eye.y = 5; Eye.z = -15;
+		Eye.x = -10; Eye.y = 5; Eye.z = -10;
 		glLoadIdentity();	//Clear Model_View Matrix
 		gluLookAt(Eye.x, Eye.y, Eye.z, At.x, At.y, At.z, Up.x, Up.y, Up.z);	//Setup Camera with modified paramters
 	}  break;
@@ -1204,6 +1206,7 @@ void largeObject()
 	carLRDisp = 0;
 	speed = 0;
 	obsIdx = 0;
+	manHit = false;
 
 	if (car_status == 0)
 	{
@@ -1225,6 +1228,7 @@ void powerUp()
 {
 	MAX_SPEED = MAX_SPEED + MAX_SPEED/2.0f;
 	glutTimerFunc(2500, restoreSpeed, 0);
+	manHit = true;
 }
 
 boolean car_crash_sound = false;
