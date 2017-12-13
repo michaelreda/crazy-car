@@ -86,6 +86,7 @@ GLTexture tex_city;
 GLTexture tex_beach;
 GLTexture tex_beach_street;
 GLTexture tex_street;
+GLTexture tex_race_end;
 
 //variables
 double ground;
@@ -586,7 +587,7 @@ void myDisplay(void)
 
 
 	//drawing City env
-	for (double i = 10.3; i < 15.3; i += 1.3){
+	for (double i = 10.3; i < 18.3; i += 1.3){
 		glPushMatrix();
 
 		// Draw Ground
@@ -634,6 +635,17 @@ void myDisplay(void)
 		glPopMatrix();
 
 	}
+	//race end 
+	glPushMatrix();
+		glRotated(45, 0, 1, 0);
+		glTranslated(0, 0,760);
+		glScaled(7*2.5, 1, 20);
+		//glScaled(7, 1, 40);
+		glTranslated(-0.5, 0.3, -0.5);
+		drawWall(0.1, tex_race_end, 1);//street
+	glPopMatrix();
+
+
 
 	////drawing last Beach env
 	//for (double i = 15.8; i < 18; i++){
@@ -928,6 +940,7 @@ void LoadAssets()
 	tex_beach.Load("Textures/beach.bmp");
 	tex_street.Load("Textures/street4Lanes.bmp");
 	tex_beach_street.Load("Textures/beach_street.bmp");
+	tex_race_end.Load("Textures/race_end.bmp");
 	loadBMP(&tex, "Textures/sky5-jpg.bmp", true);
 	loadBMP(&tex_boat, "Models/boat/Might be wood.bmp", true);
 }
