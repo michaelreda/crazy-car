@@ -18,7 +18,7 @@ int* lanes_random_number = new int[20];
 struct Obstacle {
 	double x;
 	double z;
-	char type;
+	int type;
 };
 
 Obstacle obstacles[1000];
@@ -91,7 +91,7 @@ GLTexture tex_race_end;
 //variables
 double ground;
 
-#define MAX_SPEED 4.0f
+float MAX_SPEED = 4.0f;
 #define ROTATION_MULTIPLIER 8.0f
 #define DRAG 0.04f
 #define MAX_CAR_ROT_ANGLE 3.0f
@@ -999,10 +999,8 @@ void carControlTimer(int val)
 {
 	if (accelerating)
 	{
-		if (speed < MAX_SPEED)
+		if (speed < MAX_SPEED - 0.1f)
 			speed += 0.1f;
-		if (speed > MAX_SPEED)
-			speed = MAX_SPEED;
 	}
 	else if (braking)
 	{
@@ -1059,6 +1057,33 @@ void SpecialInput(int key, int x, int y)
 
 	glutPostRedisplay();
 }
+void largeObject()
+{
+	ground = 0;
+	carLRDisp = 0;
+	speed = 0;
+
+	if (car_status == 0)
+	{
+		//game over
+	}
+	else
+		car_status -= 1;
+}
+void restoreSpeed(int in)
+{
+	MAX_SPEED = 4.0f;
+}
+void smallObject()
+{
+	MAX_SPEED = 1.0f;
+	glutTimerFunc(2500, restoreSpeed, 0);
+}
+void powerUp()
+{
+	MAX_SPEED = 5.0f;
+	glutTimerFunc(2500, restoreSpeed, 0);
+}
 void collisionDetection(int in)
 {
 	float sqr = sqrt(2);
@@ -1078,8 +1103,13 @@ void collisionDetection(int in)
 
 		if (obsZ <= carFront && obsZ >= carBack && obsX <= carLeft && obsX >= carRight)
 		{
-			//collision
-			time = 0;
+			//time = 0;
+			if (obstacles[i].type == 0)
+				powerUp();
+			else if (obstacles[i].type == 1)
+				largeObject();
+			else if (obstacles[i].type == 2)
+				smallObject();
 		}
 	}
 	glutTimerFunc(100, collisionDetection, 0);
@@ -1116,6 +1146,8 @@ void specialkeyUpFunc(int key, int x, int y)
 
 	glutPostRedisplay();
 }
+
+
 //=======================================================================
 // Main Function
 //=======================================================================
