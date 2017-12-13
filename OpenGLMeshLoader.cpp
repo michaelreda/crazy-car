@@ -105,7 +105,7 @@ bool braking = false;
 bool leftTurn = false;
 bool rightTurn = false;
 float carRotationAngle = 0.0f;
-
+bool lights = false;
 //=======================================================================
 // Lighting Configuration Function
 //=======================================================================
@@ -135,6 +135,15 @@ void InitLightSource()
 	// Finally, define light source 0 position in World Space
 	GLfloat light_position[] = { 0.0f, 10.0f, 0.0f, 1.0f };
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+
+	GLfloat light_ambient2[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat specular2[] = { 1.0f, 1.0f, 1.0f , 1.0f };
+	GLfloat light_position2[] = { 5.0, 2.0, 4.0, 1.0 };
+	glLightfv(GL_LIGHT1, GL_POSITION, light_position);
+	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 45.0);
+	glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.1f);
+	glLightfv(GL_LIGHT1, GL_SPECULAR, specular2);
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, light_ambient2);
 }
 
 //=======================================================================
@@ -780,7 +789,7 @@ void ground_motion(int val)//timer animation function, allows the user to pass a
 
 	ground -= speed;
 
-	glutPostRedisplay();						// redraw 		
+	//glutPostRedisplay();						// redraw 		
 	glutTimerFunc(50, ground_motion, 0);					//recall the time function after 1000 ms and pass a zero value as an input to the time func.
 }
 
@@ -804,8 +813,8 @@ void camera_motion(int val)//timer animation function, allows the user to pass a
 	GLfloat light_position[] = { 0.0f, 10.0f, 0.0f, 1.0f };
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 
-	glutPostRedisplay();						// redraw 		
-	glutTimerFunc(50, camera_motion, 0);					//recall the time function after 1000 ms and pass a zero value as an input to the time func.
+	//glutPostRedisplay();						// redraw 		
+	glutTimerFunc(30, camera_motion, 0);					//recall the time function after 1000 ms and pass a zero value as an input to the time func.
 }
 
 
@@ -822,7 +831,7 @@ void reset_camera_position() {
 	GLfloat light_position[] = { 0.0f, 10.0f, 0.0f, 1.0f };
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 
-	glutPostRedisplay();
+	//glutPostRedisplay();
 }
 
 //=======================================================================
@@ -853,6 +862,14 @@ void myKeyboard(unsigned char button, int x, int y)
 	case 'b':
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		break;
+	case 'l':
+	{
+		lights = !lights;
+		if (lights)
+			glDisable(GL_LIGHT1);
+		else
+			glEnable(GL_LIGHT1);
+	}	break;
 	case 27:
 		exit(0);
 		break;
@@ -860,7 +877,7 @@ void myKeyboard(unsigned char button, int x, int y)
 		break;
 	}
 
-	glutPostRedisplay();
+	//glutPostRedisplay();
 }
 
 //=======================================================================
@@ -890,7 +907,7 @@ void myMotion(int x, int y)
 	GLfloat light_position[] = { 0.0f, 10.0f, 0.0f, 1.0f };
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 
-	glutPostRedisplay();	//Re-draw scene 
+	//glutPostRedisplay();	//Re-draw scene 
 }
 
 //=======================================================================
@@ -992,15 +1009,15 @@ void sky_animation(int val) {
 	//sky_theta += 0.1;
 	if (sky_theta > 360)
 		sky_theta = 0;
-	glutPostRedisplay();
-	glutTimerFunc(10, sky_animation, 0);
+	//glutPostRedisplay();
+	glutTimerFunc(100, sky_animation, 0);
 }
 
 void time_counter(int val)//timer animation function, allows the user to pass an integer valu to the timer function.
 {
 	time += 0.1;
 
-	glutPostRedisplay();						// redraw 		
+	//glutPostRedisplay();						// redraw 		
 	glutTimerFunc(100, time_counter, 0);					//recall the time function after 1000 ms and pass a zero value as an input to the time func.
 }
 void carControlTimer(int val)
@@ -1032,7 +1049,7 @@ void carControlTimer(int val)
 		if (carRotationAngle > -MAX_CAR_ROT_ANGLE + 0.8f)
 			carRotationAngle -= 0.8f;
 	}
-	glutTimerFunc(100, carControlTimer, 0);
+	glutTimerFunc(30, carControlTimer, 0);
 }
 
 bool car_motor_sound = false;
@@ -1075,7 +1092,7 @@ void SpecialInput(int key, int x, int y)
 	break;
 	}
 
-	glutPostRedisplay();
+	//glutPostRedisplay();
 }
 void largeObject()
 {
@@ -1136,7 +1153,7 @@ void collisionDetection(int in)
 				smallObject();
 		}
 	}
-	glutTimerFunc(100, collisionDetection, 0);
+	glutTimerFunc(150, collisionDetection, 0);
 }
 void specialkeyUpFunc(int key, int x, int y)
 {
@@ -1172,10 +1189,14 @@ void specialkeyUpFunc(int key, int x, int y)
 	break;
 	}
 
-	glutPostRedisplay();
+	//glutPostRedisplay();
 }
 
-
+void animate(int in)
+{
+	glutPostRedisplay();
+	glutTimerFunc(30, animate, in);
+}
 //=======================================================================
 // Main Function
 //=======================================================================
@@ -1210,8 +1231,9 @@ void main(int argc, char** argv)
 	glutTimerFunc(0, time_counter, 0);
 	glutTimerFunc(0, sky_animation, 0);
 	glutTimerFunc(50, ground_motion, 0);
-	glutTimerFunc(100, carControlTimer, 0);
-	glutTimerFunc(100, collisionDetection, 0);
+	glutTimerFunc(30, carControlTimer, 0);
+	glutTimerFunc(150, collisionDetection, 0);
+	glutTimerFunc(0, animate, 0);
 	glutSpecialUpFunc(specialkeyUpFunc);
 	myInit();
 
