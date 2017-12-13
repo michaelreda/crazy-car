@@ -839,7 +839,17 @@ void reset_camera_position() {
 //=======================================================================
 // Keyboard Function
 //=======================================================================
-
+void firstPersonCamera()
+{
+	if (first_view)
+	{
+		float adj = (carLRDisp / 2) / sqrt(2);
+		Eye.x = 0.55 + adj; Eye.y = 2; Eye.z = 0.65 - adj;
+		At.x = zFar; At.z = zFar;
+		glLoadIdentity();	//Clear Model_View Matrix
+		gluLookAt(Eye.x, Eye.y, Eye.z, At.x, At.y, At.z, Up.x, Up.y, Up.z);	//Setup Camera with modified paramters
+	}
+}
 void myKeyboard(unsigned char button, int x, int y)
 {
 	switch (button)
@@ -847,20 +857,18 @@ void myKeyboard(unsigned char button, int x, int y)
 
 	case '1':
 		if (!first_view){
-			Eye.x = 0.55; Eye.y = 2; Eye.z = 0.55;
-			At.x = zFar; At.z = zFar;
-			glLoadIdentity();	//Clear Model_View Matrix
-			gluLookAt(Eye.x, Eye.y, Eye.z, At.x, At.y, At.z, Up.x, Up.y, Up.z);	//Setup Camera with modified paramters
+			first_view = true;
+			firstPersonCamera();
 		}
-		first_view = true;
 		break;
 	case '3':
+	{
 		first_view = false;
 		At.x = zFar; At.z = zFar;
 		Eye.x = -20; Eye.y = 5; Eye.z = -20;
 		glLoadIdentity();	//Clear Model_View Matrix
 		gluLookAt(Eye.x, Eye.y, Eye.z, At.x, At.y, At.z, Up.x, Up.y, Up.z);	//Setup Camera with modified paramters
-		break;
+	}  break;
 	case '+':
 		if (!first_view){
 
@@ -1064,7 +1072,6 @@ void sky_animation(int val) {
 	//glutPostRedisplay();
 	glutTimerFunc(100, sky_animation, 0);
 }
-
 void time_counter(int val)//timer animation function, allows the user to pass an integer valu to the timer function.
 {
 	time += 0.1;
@@ -1092,6 +1099,7 @@ void carControlTimer(int val)
 			carLRDisp = MAX_CAR_LR_DISP;
 		if (carRotationAngle < MAX_CAR_ROT_ANGLE - 0.8f)
 			carRotationAngle += 0.8f;
+		firstPersonCamera();
 	}
 	else if (rightTurn)
 	{
@@ -1100,6 +1108,7 @@ void carControlTimer(int val)
 			carLRDisp = -MAX_CAR_LR_DISP;
 		if (carRotationAngle > -MAX_CAR_ROT_ANGLE + 0.8f)
 			carRotationAngle -= 0.8f;
+		firstPersonCamera();
 	}
 	glutTimerFunc(30, carControlTimer, 0);
 }
@@ -1205,7 +1214,7 @@ void collisionDetection(int in)
 				smallObject();
 		}
 	}
-	glutTimerFunc(150, collisionDetection, 0);
+	glutTimerFunc(50, collisionDetection, 0);
 }
 void specialkeyUpFunc(int key, int x, int y)
 {
@@ -1284,7 +1293,7 @@ void main(int argc, char** argv)
 	glutTimerFunc(0, sky_animation, 0);
 	glutTimerFunc(50, ground_motion, 0);
 	glutTimerFunc(30, carControlTimer, 0);
-	glutTimerFunc(150, collisionDetection, 0);
+	glutTimerFunc(50, collisionDetection, 0);
 	glutTimerFunc(0, animate, 0);
 	glutSpecialUpFunc(specialkeyUpFunc);
 	myInit();
