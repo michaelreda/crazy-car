@@ -312,6 +312,8 @@ void drawWall(double thickness, GLTexture texture, double texture_width) {
 //text function
 void drawBitmapText(char *string, float x, float y, float z)
 {
+	glDisable(GL_LIGHTING);
+	//glColor3d(1, 1, 1);
 	char *c;
 	glRasterPos3f(x, y, z);
 
@@ -319,6 +321,7 @@ void drawBitmapText(char *string, float x, float y, float z)
 	{
 		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);
 	}
+	glEnable(GL_LIGHTING);
 }
 
 //=======================================================================
@@ -414,11 +417,12 @@ void myDisplay(void)
 
 	//draw Time
 	glPushMatrix();
-	//glColor3d(1, 1, 1);
-	glTranslated(-5.5, 0, 5.5);//place it right
-	char timestr[512];
-	sprintf(timestr, "Time: %g s", time);//converts double to string
-	drawBitmapText(timestr, Eye.x + 10, 0, Eye.z + 10); // moves with the camera
+
+		glTranslated(-5.5, 0, 5.5);//place it right
+		char timestr[512];
+		sprintf(timestr, "Time: %g s", time);//converts double to string
+		drawBitmapText(timestr, Eye.x + 10, 0, Eye.z + 10); // moves with the camera
+	
 	glPopMatrix();
 
 	//draw Level
