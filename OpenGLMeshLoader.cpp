@@ -895,6 +895,14 @@ void myKeyboard(unsigned char button, int x, int y)
 			firstPersonCamera();
 		}
 		break;
+	case '0':
+	{
+		first_view = false;
+		At.x = zFar; At.z = zFar;
+		Eye.x = -15; Eye.y = 5; Eye.z = -15;
+		glLoadIdentity();	//Clear Model_View Matrix
+		gluLookAt(Eye.x, Eye.y, Eye.z, At.x, At.y, At.z, Up.x, Up.y, Up.z);	//Setup Camera with modified paramters
+	}  break;
 	case '3':
 	{
 		first_view = false;
@@ -1215,7 +1223,7 @@ void smallObject()
 }
 void powerUp()
 {
-	MAX_SPEED = 5.0f;
+	MAX_SPEED = MAX_SPEED + MAX_SPEED/2.0f;
 	glutTimerFunc(2500, restoreSpeed, 0);
 }
 
@@ -1240,7 +1248,7 @@ void collisionDetection(int in)
 		if (obsZ <= carFront && obsZ >= carBack && obsX <= carLeft && obsX >= carRight)
 		{
 			//time = 0;
-			if (obstacles[i].type == 0)
+			if (obstacles[i].type == 3)
 				powerUp();
 			else if (obstacles[i].type == 1){
 				largeObject();
