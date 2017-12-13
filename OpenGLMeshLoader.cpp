@@ -502,6 +502,7 @@ void myDisplay(void)
 	glPushMatrix();
 
 	draw_man((int)(random_man_distance*level) % 650+50, (int)(random_man_lane*level) % 4);
+	obstacles_index++;
 
 	for (double i = 50; i < 750; i += 200 / level) {
 		/*draw_road_cone(i, LEFT_LANE);
