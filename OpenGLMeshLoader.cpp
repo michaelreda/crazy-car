@@ -12,6 +12,8 @@
 int WIDTH = 1280;
 int HEIGHT = 720;
 
+
+double on_obstacle = 0;
 double first_view = false;
 double camera_alpha = -90.3;
 bool manHit = false;
@@ -898,6 +900,7 @@ void myDisplay(void)
 }
 void ground_motion(int val)//timer animation function, allows the user to pass an integer valu to the timer function.
 {
+
 	speed -= DRAG;
 	if (speed < 0.0f)
 		speed = 0.0f;
@@ -922,6 +925,8 @@ void ground_motion(int val)//timer animation function, allows the user to pass a
 	}
 
 	ground -= speed;
+
+
 
 	//glutPostRedisplay();						// redraw 		
 	glutTimerFunc(15, ground_motion, 0);					//recall the time function after 1000 ms and pass a zero value as an input to the time func.
@@ -1270,6 +1275,9 @@ void carControlTimer(int val)
 	}
 	if (accelerating)
 	{
+		if (on_obstacle > 0){
+			on_obstacle -= 1;
+		}
 		if (speed < MAX_SPEED - 0.1f)
 			speed += 0.1f;
 	}
@@ -1431,7 +1439,8 @@ void collisionDetection(int in)
 				largeObject();
 				PlaySound(TEXT("sounds/car_crash.wav"), NULL, SND_FILENAME | SND_ASYNC);
 			}
-			else if (obstacles[i].type == 2){
+			else if (obstacles[i].type == 2 && on_obstacle<=0){
+				on_obstacle = 10;
 				smallObject();
 				PlaySound(TEXT("sounds/small_object.wav"), NULL , SND_FILENAME | SND_ASYNC);
 			}
