@@ -122,22 +122,15 @@ bool lights = false;
 
 void InitLightSource()
 {
-	// Enable Lighting for this OpenGL Program
+
 	glEnable(GL_LIGHTING);
 
-	// Enable Light Source number 0
-	// OpengL has 8 light sources
-	glEnable(GL_LIGHT0);
-
-
-	// Finally, define light source 0 position in World Space
-	GLfloat light_position[] = { 0.0f, 10.0f, 0.0f, 1.0f };
-	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 
 	//car headlights
 	GLfloat light_ambient2[] = { 1.0, 1.0, 1.0, 1.0 };
 	GLfloat specular2[] = { 1.0f, 1.0f, 1.0f , 1.0f };
 	GLfloat light_position2[] = { 5.0, 2.0, 4.0, 1.0 };
+	GLfloat light_position[] = { 0.0f, 10.0f, 0.0f, 1.0f };
 	glLightfv(GL_LIGHT1, GL_POSITION, light_position);
 	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 45.0);
 	glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.1f);
@@ -475,7 +468,8 @@ void myDisplay(void)
 
 	obstacles_index = 0;
 
-
+	//light
+	glEnable(GL_LIGHT0);
 	GLfloat lightSpecular[] = { light, light, light, light };
 	glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
 	GLfloat lightDiffuse[] = { light, light, light, light };
