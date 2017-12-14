@@ -16,6 +16,8 @@ bool manHit = false;
 double time = 0;
 float light = 0.7f;
 
+boolean help_menu_opened = true;
+
 int* lanes_random_number = new int[20];
 
 struct Obstacle {
@@ -40,6 +42,8 @@ int obsIdx = 0;
 
 GLuint tex;
 GLuint tex_boat;
+GLuint tex_help;
+
 char title[] = "Crazy Car !";
 
 // 3D Projection Options
@@ -477,6 +481,43 @@ void myDisplay(void)
 	GLfloat lightPosition[] = { 0.0f, 100.0f, 0.0f, 0.0f };
 	glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
 	glLightfv(GL_LIGHT0, GL_AMBIENT, lightIntensity);
+
+	//help menu
+	if (help_menu_opened){
+
+		glPushMatrix();
+			glEnable(GL_TEXTURE_2D);
+			glDisable(GL_LIGHTING);
+			glMatrixMode(GL_PROJECTION);
+			glPushMatrix();
+			glLoadIdentity();
+			gluOrtho2D(0.0, WIDTH, 0.0, HEIGHT);
+			glMatrixMode(GL_MODELVIEW);
+			glPushMatrix();
+			glLoadIdentity();
+
+			glBindTexture(GL_TEXTURE_2D, tex_help);
+			//glRotated(180, 0, 0, 1);
+			glBegin(GL_QUADS);
+			glTexCoord2f(0.0f, 0);			glVertex3f(0, 0, 0);
+			glTexCoord2f(0.0f, 1.0f);			glVertex3f(0, HEIGHT, 0);
+			glTexCoord2f(1, 1.0f);			glVertex3f(WIDTH, HEIGHT, 0);
+			glTexCoord2f(1, 0);				glVertex3f(WIDTH, 0, 0);
+			glEnd();
+
+
+			glMatrixMode(GL_PROJECTION);
+			glPopMatrix();
+			glMatrixMode(GL_MODELVIEW);
+			glPopMatrix();
+			glEnable(GL_LIGHTING);
+			glEnable(GL_TEXTURE_2D);
+
+		glPopMatrix();
+
+	}
+	
+
 
 	//draw Time
 	glPushMatrix();
@@ -1096,7 +1137,7 @@ void LoadAssets()
 	tex_beach_street.Load("Textures/beach_street.bmp");
 	tex_race_end.Load("Textures/race_end.bmp");
 	loadBMP(&tex, "Textures/sky5-jpg.bmp", true);
-	loadBMP(&tex_boat, "Models/boat/Might be wood.bmp", true);
+	loadBMP(&tex_help, "Textures/help.bmp", true);
 }
 
 //=======================================================================
