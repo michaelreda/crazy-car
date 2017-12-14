@@ -40,7 +40,7 @@ int obsIdx = 0;
 
 GLuint tex;
 GLuint tex_boat;
-char title[] = "3D Model Loader Sample";
+char title[] = "Crazy Car !";
 
 // 3D Projection Options
 GLdouble fovy = 45.0;
@@ -1279,7 +1279,7 @@ void collisionDetection(int in)
 			}
 			else if (obstacles[i].type == 2){
 				smallObject();
-				PlaySound(TEXT("sounds/small_object.wav"), NULL, SND_FILENAME | SND_ASYNC);
+				PlaySound(TEXT("sounds/small_object.wav"), NULL , SND_FILENAME | SND_ASYNC);
 			}
 		}
 	}
