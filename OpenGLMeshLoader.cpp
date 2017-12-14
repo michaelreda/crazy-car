@@ -640,6 +640,7 @@ void myDisplay(void)
 			glVertex3f(WIDTH, 0, 0);
 			glEnd();
 
+			glColor3d(1, 1, 1);
 
 			glMatrixMode(GL_PROJECTION);
 			glPopMatrix();
