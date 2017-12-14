@@ -1223,7 +1223,7 @@ void resetGame()
 
 	level = 1;
 	rand_trees_num = rand() % 2 + 2;
-	car_status = 2;
+	car_status = 5;
 	sky_theta = 0;
 }
 void startGame()
@@ -1469,7 +1469,7 @@ void SpecialInput(int key, int x, int y)
 	//glutPostRedisplay();
 }
 bool scoreComparator(Score const& lhs, Score const& rhs) {
-	return lhs.level < rhs.level || (lhs.level == rhs.level && lhs.time < rhs.time);
+	return lhs.level > rhs.level || (lhs.level == rhs.level && lhs.time < rhs.time);
 }
 void largeObject()
 {
@@ -1483,11 +1483,11 @@ void largeObject()
 	{
 		highScores[scoreIdx].level = level;
 		highScores[scoreIdx].time = time;
+		scoreIdx++;
 		std::sort(highScores, highScores + scoreIdx, &scoreComparator);
 		resetGame();
 		gameMode == 0;
 		showMainMenu();
-		scoreIdx++;
 	}
 }
 void restoreSpeed(int in)
