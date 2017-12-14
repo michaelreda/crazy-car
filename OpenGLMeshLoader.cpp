@@ -66,8 +66,8 @@ public:
 	}
 };
 
-Vector Eye(-15, 5, -15);
-Vector At(zFar, 0, zFar);
+Vector Eye(-10, 5, -10);
+Vector At(5, 0, 5);
 Vector Up(0, 1, 0);
 
 int cameraZoom = 0;
