@@ -110,7 +110,6 @@ GLTexture tex_race_end;
 
 //variables
 double ground;
-
 float MAX_SPEED = 4.0f;
 #define ROTATION_MULTIPLIER 8.0f
 #define DRAG 0.04f
@@ -125,7 +124,6 @@ bool leftTurn = false;
 bool rightTurn = false;
 float carRotationAngle = 0.0f;
 bool lights = false;
-
 int obstacles_index = 0;
 int level = 1;
 int rand_trees_num = rand() % 2 + 2;
@@ -133,14 +131,13 @@ int car_status = 5;
 double sky_theta = 0;
 double random_man_distance = rand() % 600 + 50;
 double random_man_lane = rand() % 4;
-
 float manX = 0.0f;
 float manY = 0.0f;
 float manZ = 0.0f;
-//=======================================================================
-// Lighting Configuration Function
-//=======================================================================
-
+boolean car_crash_sound = false;
+double isGettingDark = 1;
+bool car_motor_sound = false;
+bool car_brakes_sound = false;
 void Lights()
 {
 
@@ -155,10 +152,6 @@ void Lights()
 	glLightfv(GL_LIGHT1, GL_SPECULAR, specular);
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, light_ambient);
 }
-
-//=======================================================================
-// OpengGL Configuration Function
-//=======================================================================
 void myInit(void)
 {
 	glClearColor(0.0, 0.0, 0.0, 0.0);
@@ -172,10 +165,6 @@ void myInit(void)
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_NORMALIZE);
 }
-
-//=======================================================================
-// Render Ground Function
-//=======================================================================
 void RenderGround(GLTexture groundTex)
 {
 	//glDisable(GL_LIGHTING);	// Disable lighting 
@@ -204,8 +193,6 @@ void RenderGround(GLTexture groundTex)
 
 	glColor3f(1, 1, 1);	// Set material back to white instead of grey used for the ground texture.
 }
-
-
 void drawCube(double length, GLTexture texture, double texture_width) {
 
 	//glDisable(GL_LIGHTING);	// Disable lighting 
@@ -266,7 +253,6 @@ void drawCube(double length, GLTexture texture, double texture_width) {
 
 	glColor3f(1, 1, 1);	// Set material back to white instead of grey used for the ground texture.
 }
-
 void drawSphere(double radius) {
 	GLUquadricObj * qobj;
 	qobj = gluNewQuadric();
@@ -278,7 +264,6 @@ void drawSphere(double radius) {
 	gluSphere(qobj, radius, 100, 100);
 	gluDeleteQuadric(qobj);
 }
-
 void drawWall(double thickness, GLTexture texture, double texture_width) {
 	glPushMatrix();
 	glTranslated(0.5, 0.5 * thickness, 0.5);
@@ -286,8 +271,6 @@ void drawWall(double thickness, GLTexture texture, double texture_width) {
 	drawCube(1, texture, texture_width);
 	glPopMatrix();
 }
-
-//text function
 void drawBitmapText(char *string, float x, float y, float z)
 {
 	glDisable(GL_LIGHTING);
@@ -329,11 +312,6 @@ void drawBitmapText2D(char *string, float x, float y)
 	glEnable(GL_LIGHTING);
 	glEnable(GL_TEXTURE_2D);
 }
-
-//=======================================================================
-// Obtacles
-//=======================================================================
-
 void draw_road_cone(double distance, int lane) {
 	glPushMatrix();
 	glRotatef(45, 0, 1, 0);
@@ -361,7 +339,6 @@ void draw_road_cone(double distance, int lane) {
 	model_road_cone.Draw();
 	glPopMatrix();
 }
-
 void draw_barrel(double distance, int lane) {
 	glPushMatrix();
 	glRotatef(45, 0, 1, 0);
@@ -389,7 +366,6 @@ void draw_barrel(double distance, int lane) {
 	model_barrel.Draw();
 	glPopMatrix();
 }
-
 void draw_man(double distance, int lane) {
 	glPushMatrix();
 		glRotatef(45, 0, 1, 0);
@@ -419,11 +395,9 @@ void draw_man(double distance, int lane) {
 		model_man.Draw();
 	glPopMatrix();
 }
-
 bool obstacles_sorter(Obstacle const& lhs, Obstacle const& rhs) {
 	return lhs.z < rhs.z;
 }
-
 void myDisplay(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -917,10 +891,6 @@ void myDisplay(void)
 
 	glutSwapBuffers();
 }
-
-//=======================================================================
-// ground animation Function
-//=======================================================================
 void ground_motion(int val)//timer animation function, allows the user to pass an integer valu to the timer function.
 {
 	speed -= DRAG;
@@ -951,10 +921,6 @@ void ground_motion(int val)//timer animation function, allows the user to pass a
 	//glutPostRedisplay();						// redraw 		
 	glutTimerFunc(15, ground_motion, 0);					//recall the time function after 1000 ms and pass a zero value as an input to the time func.
 }
-
-//=======================================================================
-// camera animation Function
-//=======================================================================
 void camera_motion(int val)//timer animation function, allows the user to pass an integer valu to the timer function.
 {
 	if (Eye.x > zFar)
@@ -975,8 +941,6 @@ void camera_motion(int val)//timer animation function, allows the user to pass a
 	//glutPostRedisplay();						// redraw 		
 	glutTimerFunc(30, camera_motion, 0);					//recall the time function after 1000 ms and pass a zero value as an input to the time func.
 }
-
-
 void reset_camera_position() {
 	Eye.x = -20;
 	Eye.z = -20;
@@ -992,10 +956,6 @@ void reset_camera_position() {
 
 	//glutPostRedisplay();
 }
-
-//=======================================================================
-// Keyboard Function
-//=======================================================================
 void firstPersonCamera()
 {
 	if (first_view)
@@ -1106,12 +1066,6 @@ void myKeyboard(unsigned char button, int x, int y)
 
 	//glutPostRedisplay();
 }
-
-
-//=======================================================================
-// Mouse Function
-//=======================================================================
-
 void closeStartMenu()
 {
 	start_menu_opened = false;
@@ -1214,10 +1168,6 @@ void myMouse(int button, int state, int x, int y)
 		showMainMenu();
 	}
 }
-
-//=======================================================================
-// Reshape Function
-//=======================================================================
 void myReshape(int w, int h)
 {
 	if (h == 0) {
@@ -1240,10 +1190,6 @@ void myReshape(int w, int h)
 	glLoadIdentity();
 	gluLookAt(Eye.x, Eye.y, Eye.z, At.x, At.y, At.z, Up.x, Up.y, Up.z);
 }
-
-//=======================================================================
-// Assets Loading Function
-//=======================================================================
 void LoadAssets()
 {
 	// Loading Model files
@@ -1271,11 +1217,6 @@ void LoadAssets()
 	loadBMP(&tex_start_menu, "Textures/start_menu.bmp", true);
 	loadBMP(&tex_time, "Textures/time.bmp", true);
 }
-
-//=======================================================================
-// Animation Functions
-//=======================================================================
-double isGettingDark = 1;
 void sky_animation(int val) {
 	//if (isGettingDark ==1 && light>=0.1){
 	//	light -= 0.0015f;
@@ -1353,9 +1294,6 @@ void carControlTimer(int val)
 	}
 	glutTimerFunc(15, carControlTimer, 0);
 }
-
-bool car_motor_sound = false;
-bool car_brakes_sound = false;
 void collideMan(int in)
 {
 	if (in == 20)
@@ -1455,8 +1393,6 @@ void powerUp()
 	manHit = true;
 	collideMan(0);
 }
-
-boolean car_crash_sound = false;
 void collisionDetection(int in)
 {
 	if (gameMode != 2)
@@ -1534,15 +1470,11 @@ void specialkeyUpFunc(int key, int x, int y)
 
 	//glutPostRedisplay();
 }
-
 void animate(int in)
 {
 	glutPostRedisplay();
 	glutTimerFunc(30, animate, in);
 }
-//=======================================================================
-// Main Function
-//=======================================================================
 void main(int argc, char** argv)
 {
 	for (int i = 0; i < 20; i++) {
