@@ -146,38 +146,14 @@ void Lights()
 
 	glEnable(GL_LIGHTING);
 
-
 	//car headlights
-	float light_ambient2[] = { 5.0, 5.0, 5.0, 1.0 };
-	float specular2[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	float light_position2[] = { 5.0, 2.0, 4.0, 1.0 };
-	float light_position[] = { 0.0f, 10.0f, 0.0f, 1.0f };
+	GLfloat light_ambient[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat specular[] = { 1.0f, 1.0f, 1.0f , 1.0f };
+	GLfloat light_position[] = { 5.0, 2.0, 4.0, 1.0 };
 	glLightfv(GL_LIGHT1, GL_POSITION, light_position);
-	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 45.0);
 	glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.1f);
-	glLightfv(GL_LIGHT1, GL_SPECULAR, specular2);
-	glLightfv(GL_LIGHT1, GL_DIFFUSE, light_ambient2);
-}
-
-//=======================================================================
-// Material Configuration Function
-//======================================================================
-void InitMaterial()
-{
-	// Enable Material Tracking
-	glEnable(GL_COLOR_MATERIAL);
-
-	// Sich will be assigneet Material Properties whd by glColor
-	glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-
-	// Set Material's Specular Color
-	// Will be applied to all objects
-	GLfloat specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	glMaterialfv(GL_FRONT, GL_SPECULAR, specular);
-
-	// Set Material's Shine value (0->128)
-	GLfloat shininess[] = { 96.0f };
-	glMaterialfv(GL_FRONT, GL_SHININESS, shininess);
+	glLightfv(GL_LIGHT1, GL_SPECULAR, specular);
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, light_ambient);
 }
 
 //=======================================================================
@@ -186,35 +162,14 @@ void InitMaterial()
 void myInit(void)
 {
 	glClearColor(0.0, 0.0, 0.0, 0.0);
-
 	glMatrixMode(GL_PROJECTION);
-
 	glLoadIdentity();
-
 	gluPerspective(fovy, aspectRatio, zNear, zFar);
-	//*******************************************************************************************//
-	// fovy:			Angle between the bottom and top of the projectors, in degrees.			 //
-	// aspectRatio:		Ratio of width to height of the clipping plane.							 //
-	// zNear and zFar:	Specify the front and back clipping planes distances from camera.		 //
-	//*******************************************************************************************//
-
 	glMatrixMode(GL_MODELVIEW);
-
 	glLoadIdentity();
-
 	gluLookAt(Eye.x, Eye.y, Eye.z, At.x, At.y, At.z, Up.x, Up.y, Up.z);
-	//*******************************************************************************************//
-	// EYE (ex, ey, ez): defines the location of the camera.									 //
-	// AT (ax, ay, az):	 denotes the direction where the camera is aiming at.					 //
-	// UP (ux, uy, uz):  denotes the upward orientation of the camera.							 //
-	//*******************************************************************************************//
-
 	Lights();
-
-	InitMaterial();
-
 	glEnable(GL_DEPTH_TEST);
-
 	glEnable(GL_NORMALIZE);
 }
 
