@@ -133,6 +133,10 @@ int car_status = 5;
 double sky_theta = 0;
 double random_man_distance = rand() % 600 + 50;
 double random_man_lane = rand() % 4;
+
+float manX = 0.0f;
+float manY = 0.0f;
+float manZ = 0.0f;
 //=======================================================================
 // Lighting Configuration Function
 //=======================================================================
@@ -454,10 +458,10 @@ void draw_man(double distance, int lane) {
 			glTranslated(-6, 0, 0);//bring house left of the road
 			obstacles[obstacles_index].x = -6;
 		}
-
+		if(manHit)
+			glTranslatef(manX, manY, manZ);
 		glScaled(2, 2, 2);
-		if(!manHit)
-			model_man.Draw();
+		model_man.Draw();
 	glPopMatrix();
 }
 
@@ -659,8 +663,10 @@ void myDisplay(void)
 
 	//obstacles
 	glPushMatrix();
-
-	draw_man((int)(random_man_distance*level) % 650+50, (int)(random_man_lane*level) % 4);
+	glPushMatrix();
+		
+		draw_man((int)(random_man_distance*level) % 650+50, (int)(random_man_lane*level) % 4);
+	glPopMatrix();
 	obstacles_index++;
 
 	for (double i = 50; i < 750; i += 200 / level) {
@@ -974,6 +980,9 @@ void ground_motion(int val)//timer animation function, allows the user to pass a
 		ground = 0;
 		obsIdx = 0;
 		speed = 0;
+		manX = 0.0f;
+		manY = 0.0f;
+		manZ = 0.0f;
 		level++;
 		obstacles_index = 0;
 		for (int i = 0; i < 20; i++) {
@@ -1154,6 +1163,9 @@ void closeStartMenu()
 }
 void resetGame()
 {
+	manX = 0.0f;
+	manY = 0.0f;
+	manZ = 0.0f;
 	first_view = false;
 	camera_alpha = -90.3;
 	manHit = false;
@@ -1389,7 +1401,20 @@ void carControlTimer(int val)
 
 bool car_motor_sound = false;
 bool car_brakes_sound = false;
+void collideMan(int in)
+{
+	if (in == 20)
+		return;
 
+	if (in <= 9)
+		manY += 0.2f;
+	else
+		manY -= 0.2f;
+	manX -= 0.4f;
+	manZ += 0.6f;
+
+	glutTimerFunc(30, collideMan, ++in);
+}
 void SpecialInput(int key, int x, int y)
 {
 	switch (key)
@@ -1473,6 +1498,7 @@ void powerUp()
 	MAX_SPEED = MAX_SPEED + MAX_SPEED/2.0f;
 	glutTimerFunc(2500, restoreSpeed, 0);
 	manHit = true;
+	collideMan(0);
 }
 
 boolean car_crash_sound = false;
