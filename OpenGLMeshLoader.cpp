@@ -1418,7 +1418,7 @@ void collisionDetection(int in)
 		if (obsZ <= carFront && obsZ >= carBack && obsX <= carLeft && obsX >= carRight)
 		{
 			//time = 0;
-			if (obstacles[i].type == 3){
+			if (obstacles[i].type == 3 && !manHit){
 				powerUp();
 				PlaySound(TEXT("sounds/man_screaming.wav"), NULL, SND_FILENAME | SND_ASYNC);
 			}
