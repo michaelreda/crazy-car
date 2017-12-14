@@ -4,6 +4,8 @@
 #include <glut.h>
 #include "Car.h"
 #include <algorithm>
+#include <sstream>
+#include <string>
 
 
 
@@ -15,7 +17,7 @@ double camera_alpha = -90.3;
 bool manHit = false;
 double time = 0;
 float light = 0.7f;
-
+int gameMode = 0;
 boolean help_menu_opened = false;
 boolean start_menu_opened = true;
 
@@ -26,6 +28,13 @@ struct Obstacle {
 	double z;
 	int type;
 };
+struct Score {
+	int level;
+	double time;
+};
+
+Score highScores[100];
+int scoreIdx = 0;
 
 Obstacle obstacles[1000];
 
@@ -116,6 +125,14 @@ bool leftTurn = false;
 bool rightTurn = false;
 float carRotationAngle = 0.0f;
 bool lights = false;
+
+int obstacles_index = 0;
+int level = 1;
+int rand_trees_num = rand() % 2 + 2;
+int car_status = 5;
+double sky_theta = 0;
+double random_man_distance = rand() % 600 + 50;
+double random_man_lane = rand() % 4;
 //=======================================================================
 // Lighting Configuration Function
 //=======================================================================
@@ -365,8 +382,6 @@ void drawBitmapText2D(char *string, float x, float y)
 // Obtacles
 //=======================================================================
 
-
-int obstacles_index = 0;
 void draw_road_cone(double distance, int lane) {
 	glPushMatrix();
 	glRotatef(45, 0, 1, 0);
@@ -453,21 +468,9 @@ void draw_man(double distance, int lane) {
 	glPopMatrix();
 }
 
-
-//=======================================================================
-// Display Function
-//=======================================================================
-
 bool obstacles_sorter(Obstacle const& lhs, Obstacle const& rhs) {
 	return lhs.z < rhs.z;
 }
-
-int level = 1;
-int rand_trees_num = rand() % 2 + 2;
-int car_status = 5;
-double sky_theta = 0;
-double random_man_distance = rand() % 600 + 50;
-double random_man_lane = rand() % 4;
 
 void myDisplay(void)
 {
@@ -491,9 +494,29 @@ void myDisplay(void)
 	//help menu
 	if (start_menu_opened){
 
+
+		drawBitmapText2D("High Scores", WIDTH - 200, HEIGHT - 20);
+		int yDisp = 60;
+		
+		for(int i = 0; i < scoreIdx && i <= 9; i++)
+		{
+			char timestr[100];
+			int minutes = highScores[i].time / 60;
+			int seconds = (int)highScores[i].time % 60;
+			int milliSeconds = (highScores[i].time - (int)highScores[i].time) * 10;
+			sprintf(timestr, "%d:%d:%d", minutes, seconds, milliSeconds);
+			std::stringstream ss;
+			ss << i+1 << ": Level:" << highScores[i].level << " Time: " << timestr;
+			std::string s = ss.str();
+			char *cstr = new char[s.length() + 1];
+			strcpy(cstr, s.c_str());
+			drawBitmapText2D(cstr, WIDTH - 280, HEIGHT - yDisp);
+			yDisp += 30;
+		}
+
+		glDisable(GL_LIGHTING);
 		glPushMatrix();
 		glEnable(GL_TEXTURE_2D);
-		glDisable(GL_LIGHTING);
 		glMatrixMode(GL_PROJECTION);
 		glPushMatrix();
 		glLoadIdentity();
@@ -516,11 +539,11 @@ void myDisplay(void)
 		glPopMatrix();
 		glMatrixMode(GL_MODELVIEW);
 		glPopMatrix();
-		glEnable(GL_LIGHTING);
+		
 		glEnable(GL_TEXTURE_2D);
 
 		glPopMatrix();
-
+		glEnable(GL_LIGHTING);
 	}
 
 
@@ -537,7 +560,6 @@ void myDisplay(void)
 			glMatrixMode(GL_MODELVIEW);
 			glPushMatrix();
 			glLoadIdentity();
-
 			glBindTexture(GL_TEXTURE_2D, tex_help);
 			//glRotated(180, 0, 0, 1);
 			glBegin(GL_QUADS);
@@ -1035,6 +1057,8 @@ void myKeyboard(unsigned char button, int x, int y)
 	{
 
 	case '1':
+		if (gameMode != 2)
+			return;
 		if (!first_view){
 			first_view = true;
 			firstPersonCamera();
@@ -1042,6 +1066,8 @@ void myKeyboard(unsigned char button, int x, int y)
 		break;
 	case '0':
 	{
+		if (gameMode != 2)
+			return;
 		first_view = false;
 		At.x = zFar; At.z = zFar;
 		Eye.x = -10; Eye.y = 5; Eye.z = -10;
@@ -1050,6 +1076,8 @@ void myKeyboard(unsigned char button, int x, int y)
 	}  break;
 	case '3':
 	{
+		if (gameMode != 2)
+			return;
 		first_view = false;
 		At.x = 5; At.z = 5;
 		Eye.x = -9; Eye.y = 5; Eye.z = -9;
@@ -1057,6 +1085,8 @@ void myKeyboard(unsigned char button, int x, int y)
 		gluLookAt(Eye.x, Eye.y, Eye.z, At.x, At.y, At.z, Up.x, Up.y, Up.z);	//Setup Camera with modified paramters
 	}  break;
 	case '+':
+		if (gameMode != 2)
+			return;
 		if (!first_view){
 
 			//At.x = 5; At.z = 5;
@@ -1077,6 +1107,8 @@ void myKeyboard(unsigned char button, int x, int y)
 		}
 		break;
 	case '-':
+		if (gameMode != 2)
+			return;
 		if (!first_view){
 			//Eye.x += 0.2;
 			//At.x = 5; At.z = 5;
@@ -1094,23 +1126,15 @@ void myKeyboard(unsigned char button, int x, int y)
 			gluLookAt(Eye.x, Eye.y, Eye.z, At.x, At.y, At.z, Up.x, Up.y, Up.z);	//Setup Camera with modified paramters
 		}
 		break;
-	case 'g':
-		glutTimerFunc(0, ground_motion, 0);
-		break;
-	case 'c':
-		glutTimerFunc(0, camera_motion, 0);
-		break;
 	case 'r':
+		if (gameMode != 2)
+			return;
 		reset_camera_position();
-		break;
-	case 'w':
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		break;
-	case 'b':
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		break;
 	case 'l':
 	{
+		if (gameMode != 2)
+			return;
 		lights = !lights;
 		if (lights)
 			glDisable(GL_LIGHT1);
@@ -1160,13 +1184,104 @@ void myMotion(int x, int y)
 //=======================================================================
 // Mouse Function
 //=======================================================================
+
+void closeStartMenu()
+{
+	start_menu_opened = false;
+}
+void resetGame()
+{
+	first_view = false;
+	camera_alpha = -90.3;
+	manHit = false;
+	time = 0;
+	light = 0.7f;
+	help_menu_opened = false;
+	start_menu_opened = false;
+	obsIdx = 0;
+
+	fovy = 45.0;
+	aspectRatio = (GLdouble)WIDTH / (GLdouble)HEIGHT;
+	zNear = 0.1;
+	zFar = 1600;
+
+	Eye.x = -10;
+	Eye.y = 5;
+	Eye.z = -10;
+	At.x = 5;
+	At.y = 0;
+	At.z = 5;
+	Up.x = 0;
+	Up.y = 1;
+	Up.z = 0;
+
+	cameraZoom = 0;
+
+	MAX_SPEED = 4.0f;
+	speed = 0;
+	carLRDisp = 0.0f;
+	accelerating = false;
+	braking = false;
+	leftTurn = false;
+	rightTurn = false;
+	carRotationAngle = 0.0f;
+	lights = false;
+
+	level = 1;
+	rand_trees_num = rand() % 2 + 2;
+	car_status = 2;
+	sky_theta = 0;
+}
+void startGame()
+{
+	gameMode = 2;
+	resetGame();
+}
+void openHelpMenu()
+{
+	gameMode = 1;
+	help_menu_opened = true;
+}
+void closeHelpMenu()
+{
+	help_menu_opened = false;
+}
+void showMainMenu()
+{
+	gameMode = 0;
+	start_menu_opened = true;
+}
 void myMouse(int button, int state, int x, int y)
 {
-	y = HEIGHT - y;
+	y = HEIGHT - y - 1;
+	int startX = (WIDTH / 3) + 50;
+	int startY = (HEIGHT / 3) + 100;
+	int startWidth = 300;
+	int startHeight = 60;
 
-	if (state == GLUT_DOWN)
+	int helpX = (WIDTH / 3) + 60;
+	int helpY = (HEIGHT / 3) + 20;
+	int helpWidth = 280;
+	int helpHeight = 60;
+
+	int exitX = WIDTH - 100;
+	int exitY = HEIGHT - 70;
+	int exitWidth = 100;
+	int exitHeight = 70;
+	if (gameMode == 0 && x >= startX && x <= startX + startWidth && y >= startY && y <= startY + startHeight)
 	{
-		cameraZoom = y;
+		closeStartMenu();
+		startGame();
+	}
+	else if (gameMode == 0 && x >= helpX && x <= helpX + helpWidth && y >= helpY && y <= helpY + helpHeight)
+	{
+		closeStartMenu();
+		openHelpMenu();
+	}
+	else if (gameMode == 1 && x >= exitX && x <= exitX + exitWidth && y >= exitY && y <= exitY + exitHeight)
+	{
+		closeHelpMenu();
+		showMainMenu();
 	}
 }
 
@@ -1264,13 +1379,19 @@ void sky_animation(int val) {
 }
 void time_counter(int val)//timer animation function, allows the user to pass an integer valu to the timer function.
 {
-	time += 0.1;
+	if (gameMode == 2)
+		time += 0.1;
 
 	//glutPostRedisplay();						// redraw 		
 	glutTimerFunc(100, time_counter, 0);					//recall the time function after 1000 ms and pass a zero value as an input to the time func.
 }
 void carControlTimer(int val)
 {
+	if (gameMode != 2)
+	{
+		glutTimerFunc(15, carControlTimer, 0);
+		return;
+	}
 	if (accelerating)
 	{
 		if (speed < MAX_SPEED - 0.1f)
@@ -1312,6 +1433,8 @@ void SpecialInput(int key, int x, int y)
 	{
 	case GLUT_KEY_UP:
 	{
+		if (gameMode != 2)
+			return;
 		if (!car_motor_sound){
 			car_motor_sound = true;
 			PlaySound(TEXT("sounds/car_motor.wav"), NULL, SND_ASYNC | SND_LOOP);
@@ -1321,6 +1444,8 @@ void SpecialInput(int key, int x, int y)
 	break;
 	case GLUT_KEY_DOWN:
 	{
+		if (gameMode != 2)
+			return;
 		if (!car_brakes_sound){
 			car_brakes_sound = true;
 			if (speed !=0)
@@ -1331,12 +1456,16 @@ void SpecialInput(int key, int x, int y)
 	break;
 	case GLUT_KEY_LEFT:
 	{
+		if (gameMode != 2)
+			return;
 		leftTurn = true;
 		car.setCarDirection(LEFT);
 	}
 	break;
 	case GLUT_KEY_RIGHT:
 	{
+		if (gameMode != 2)
+			return;
 		rightTurn = true;
 		car.setCarDirection(RIGHT);
 	}
@@ -1345,6 +1474,9 @@ void SpecialInput(int key, int x, int y)
 
 	//glutPostRedisplay();
 }
+bool scoreComparator(Score const& lhs, Score const& rhs) {
+	return lhs.level < rhs.level || (lhs.level == rhs.level && lhs.time < rhs.time);
+}
 void largeObject()
 {
 	ground = 0;
@@ -1352,13 +1484,17 @@ void largeObject()
 	speed = 0;
 	obsIdx = 0;
 	manHit = false;
-
+	car_status -= 1;
 	if (car_status == 0)
 	{
-		//game over
+		highScores[scoreIdx].level = level;
+		highScores[scoreIdx].time = time;
+		std::sort(highScores, highScores + scoreIdx, &scoreComparator);
+		resetGame();
+		gameMode == 0;
+		showMainMenu();
+		scoreIdx++;
 	}
-	else
-		car_status -= 1;
 }
 void restoreSpeed(int in)
 {
@@ -1379,6 +1515,11 @@ void powerUp()
 boolean car_crash_sound = false;
 void collisionDetection(int in)
 {
+	if (gameMode != 2)
+	{
+		glutTimerFunc(50, collisionDetection, 0);
+		return;
+	}
 	float sqr = sqrt(2);
 	float carFront = (-ground*sqr) + CAR_LENGTH / 4;
 	float carBack = carFront - CAR_LENGTH / 2;
@@ -1481,8 +1622,6 @@ void main(int argc, char** argv)
 	glutMotionFunc(myMotion);
 
 	glutMouseFunc(myMouse);
-
-	//glutReshapeFunc(myReshape);
 
 	glutSpecialFunc(SpecialInput);
 
