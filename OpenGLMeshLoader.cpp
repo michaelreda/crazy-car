@@ -403,7 +403,12 @@ void myDisplay(void)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	obstacles_index = 0;
-
+	
+	glPushMatrix();
+		glRotatef(45, 0, 1, 0);
+		GLfloat light_position2[] = { carLRDisp/2, 2.0, 4.0, 1.0 };
+		glLightfv(GL_LIGHT1, GL_POSITION, light_position2);
+	glPopMatrix();
 	//light
 	glEnable(GL_LIGHT0);
 	float light_array[] = { light, light, light, light };
