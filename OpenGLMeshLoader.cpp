@@ -16,7 +16,8 @@ bool manHit = false;
 double time = 0;
 float light = 0.7f;
 
-boolean help_menu_opened = true;
+boolean help_menu_opened = false;
+boolean start_menu_opened = true;
 
 int* lanes_random_number = new int[20];
 
@@ -43,6 +44,7 @@ int obsIdx = 0;
 GLuint tex;
 GLuint tex_boat;
 GLuint tex_help;
+GLuint tex_start_menu;
 
 char title[] = "Crazy Car !";
 
@@ -481,6 +483,45 @@ void myDisplay(void)
 	GLfloat lightPosition[] = { 0.0f, 100.0f, 0.0f, 0.0f };
 	glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
 	glLightfv(GL_LIGHT0, GL_AMBIENT, lightIntensity);
+
+
+
+
+	//help menu
+	if (start_menu_opened){
+
+		glPushMatrix();
+		glEnable(GL_TEXTURE_2D);
+		glDisable(GL_LIGHTING);
+		glMatrixMode(GL_PROJECTION);
+		glPushMatrix();
+		glLoadIdentity();
+		gluOrtho2D(0.0, WIDTH, 0.0, HEIGHT);
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+		glLoadIdentity();
+
+		glBindTexture(GL_TEXTURE_2D, tex_start_menu);
+		//glRotated(180, 0, 0, 1);
+		glBegin(GL_QUADS);
+		glTexCoord2f(0.0f, 0);			glVertex3f(WIDTH/3, HEIGHT/3, 0);
+		glTexCoord2f(0.0f, 1.0f);		glVertex3f(WIDTH / 3 , 2*HEIGHT/3, 0);
+		glTexCoord2f(1, 1.0f);			glVertex3f(2 * WIDTH / 3 - 30, 2 * HEIGHT / 3, 0);
+		glTexCoord2f(1, 0);				glVertex3f(2 * WIDTH / 3 - 30, HEIGHT / 3, 0);
+		glEnd();
+
+
+		glMatrixMode(GL_PROJECTION);
+		glPopMatrix();
+		glMatrixMode(GL_MODELVIEW);
+		glPopMatrix();
+		glEnable(GL_LIGHTING);
+		glEnable(GL_TEXTURE_2D);
+
+		glPopMatrix();
+
+	}
+
 
 	//help menu
 	if (help_menu_opened){
@@ -1138,6 +1179,7 @@ void LoadAssets()
 	tex_race_end.Load("Textures/race_end.bmp");
 	loadBMP(&tex, "Textures/sky5-jpg.bmp", true);
 	loadBMP(&tex_help, "Textures/help.bmp", true);
+	loadBMP(&tex_start_menu, "Textures/start_menu.bmp", true);
 }
 
 //=======================================================================
