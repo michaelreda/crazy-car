@@ -1389,7 +1389,7 @@ void smallObject()
 void powerUp()
 {
 	MAX_SPEED = MAX_SPEED + MAX_SPEED/2.0f;
-	glutTimerFunc(2500, restoreSpeed, 0);
+	glutTimerFunc(5000, restoreSpeed, 0);
 	manHit = true;
 	collideMan(0);
 }
