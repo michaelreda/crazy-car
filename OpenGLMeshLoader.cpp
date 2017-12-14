@@ -45,6 +45,7 @@ GLuint tex;
 GLuint tex_boat;
 GLuint tex_help;
 GLuint tex_start_menu;
+GLuint tex_time;
 
 char title[] = "Crazy Car !";
 
@@ -565,11 +566,16 @@ void myDisplay(void)
 
 	//glTranslated(-5.5, 0, 5.5);//place it right
 	char timestr[512];
-	sprintf(timestr, "Time: %g s", time);//converts double to string
+	int minutes = time / 60;
+	int seconds = (int)time % 60;
+	int milliSeconds = (time - minutes - seconds)*100;
+	sprintf(timestr, "%d:%d:%d", minutes,seconds,milliSeconds);//converts double to string
 	//drawBitmapText(timestr, Eye.x + 10, 0, Eye.z + 10); // moves with the camera
-	drawBitmapText2D(timestr, WIDTH-140, 10); // moves with the camera
-
+	drawBitmapText2D(timestr, WIDTH-90, 13); // moves with the camera
 	glPopMatrix();
+
+
+	
 
 	//draw Level
 	glPushMatrix();
@@ -587,6 +593,44 @@ void myDisplay(void)
 	sprintf(statusStr, "Car Status: %d Car Speed: %d Km/h", car_status, (int)(speed * 10));//converts double to string
 	//sprintf(statusStr, "Light: %f sky_theta: %g Km/h", light, sky_theta);//converts double to string
 	drawBitmapText2D(statusStr, 10, 10); // moves with the camera
+	glPopMatrix();
+
+	//draw time background and toolbar
+	glPushMatrix();
+			glEnable(GL_TEXTURE_2D);
+			glDisable(GL_LIGHTING);
+			glMatrixMode(GL_PROJECTION);
+			glPushMatrix();
+			glLoadIdentity();
+			gluOrtho2D(0.0, WIDTH, 0.0, HEIGHT);
+			glMatrixMode(GL_MODELVIEW);
+			glPushMatrix();
+			glLoadIdentity();
+
+			glBindTexture(GL_TEXTURE_2D, tex_time);
+			//glRotated(180, 0, 0, 1);
+			glBegin(GL_QUADS);
+			glTexCoord2f(0.0f, 0);			glVertex3f(WIDTH - 150, 0, 0);
+			glTexCoord2f(0.0f, 1.0f);			glVertex3f(WIDTH - 150, 40, 0);
+			glTexCoord2f(1, 1.0f);			glVertex3f(WIDTH, 40, 0);
+			glTexCoord2f(1, 0);				glVertex3f(WIDTH, 0, 0);
+			glEnd();
+
+			glBegin(GL_QUADS);
+			glColor3d(0.918, 0.694, 0.373);
+			glVertex3f(0, 0, 0);
+			glVertex3f(0, 40, 0);
+			glVertex3f(WIDTH, 40, 0);
+			glVertex3f(WIDTH, 0, 0);
+			glEnd();
+
+
+			glMatrixMode(GL_PROJECTION);
+			glPopMatrix();
+			glMatrixMode(GL_MODELVIEW);
+			glPopMatrix();
+			glEnable(GL_LIGHTING);
+			glEnable(GL_TEXTURE_2D);
 	glPopMatrix();
 
 
@@ -1180,6 +1224,7 @@ void LoadAssets()
 	loadBMP(&tex, "Textures/sky5-jpg.bmp", true);
 	loadBMP(&tex_help, "Textures/help.bmp", true);
 	loadBMP(&tex_start_menu, "Textures/start_menu.bmp", true);
+	loadBMP(&tex_time, "Textures/time.bmp", true);
 }
 
 //=======================================================================
