@@ -94,7 +94,7 @@ Model_3DS model_boat;
 Model_3DS model_tree;
 Model_3DS model_car;
 Model_3DS model_wheel;
-Model_3DS model_umbrella;
+Model_3DS model_lifebuoy;
 Model_3DS model_road_cone;
 Model_3DS model_barrel;
 Model_3DS model_building;
@@ -713,17 +713,16 @@ void myDisplay(void)
 
 
 		for (int j = 0; j < rand_trees_num; j++) {
-			// Draw umbrella Model
+			// Draw lifebuoy Model
 			glPushMatrix();
 			glTranslated(i * 40 + -j * 10, 0, i * 40 + -j * 10);
 			if (j % 2 == 1)
-				glTranslatef(-20, 0, 0);//bring it right
+				glTranslatef(-18, 0, 0);//bring it right
 			else
-				glTranslatef(20, 0, 0);//bring it right
+				glTranslatef(18, 0, 0);//bring it right
 
-			glTranslatef(0, 2, 0);
-			glScalef(50, 50, 50);
-			model_umbrella.Draw();
+			glScalef(0.02, 0.02, 0.02);
+			model_lifebuoy.Draw();
 			glPopMatrix();
 		}
 
@@ -731,8 +730,8 @@ void myDisplay(void)
 		// Draw boat Model
 		glPushMatrix();
 		glTranslated(i * 30, 0, i * 30);
-		glTranslated(10, 0, 0);//bring house left of the road
-		glScaled(0.5, 0.5, 0.5);
+		glTranslated(-250 ,-100, 280);//bring house left of the road
+		glScaled(0.1, 0.1, 0.1);
 		model_boat.Draw();
 		glPopMatrix();
 
@@ -890,7 +889,7 @@ void myDisplay(void)
 
 
 	//	for (int j = 0; j < rand_trees_num; j++){
-	//		// Draw umbrella Model
+	//		// Draw lifebuoy Model
 	//		glPushMatrix();
 	//		glTranslated(i * 40 + -j * 10, 0, i * 40 + -j * 10);
 	//		if (j % 2 == 1)
@@ -900,7 +899,7 @@ void myDisplay(void)
 
 	//		glTranslatef(0, 2, 0);
 	//		glScalef(50, 50, 50);
-	//		model_umbrella.Draw();
+	//		model_lifebuoy.Draw();
 	//		glPopMatrix();
 	//	}
 
@@ -1313,9 +1312,9 @@ void LoadAssets()
 {
 	// Loading Model files
 	model_house.Load("Models/house/house.3DS");
-	model_boat.Load("Models/boat/Cannoe.3ds");
+	model_boat.Load("Models/boat2/boat.3ds");
 	model_tree.Load("Models/tree/Tree1.3ds");
-	model_umbrella.Load("Models/umbrella/Umbrella N040608.3ds");
+	model_lifebuoy.Load("Models/boat2/lifebuoy.3ds");
 	model_road_cone.Load("Models/road_cone.3ds");
 	model_barrel.Load("Models/barrel.3ds");
 	model_building.Load("Models/skyA.3ds");
