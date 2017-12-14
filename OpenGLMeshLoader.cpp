@@ -730,8 +730,8 @@ void myDisplay(void)
 		// Draw boat Model
 		glPushMatrix();
 		glTranslated(i * 30, 0, i * 30);
-		glTranslated(-250 ,-100, 280);//bring house left of the road
 		glScaled(0.1, 0.1, 0.1);
+		glTranslated(-50, -100, 250);//bring house left of the road
 		model_boat.Draw();
 		glPopMatrix();
 
