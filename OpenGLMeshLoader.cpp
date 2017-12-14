@@ -123,22 +123,11 @@ void InitLightSource()
 	glEnable(GL_LIGHT0);
 
 
-	// Define Light source 0 ambient light
-	GLfloat ambient[] = { 0.1f, 0.1f, 0.1, 1.0f };
-	glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
-
-	// Define Light source 0 diffuse light
-	GLfloat diffuse[] = { 0.5f, 0.5f, 0.5f, 1.0f };
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
-
-	// Define Light source 0 Specular light
-	GLfloat specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
-
 	// Finally, define light source 0 position in World Space
 	GLfloat light_position[] = { 0.0f, 10.0f, 0.0f, 1.0f };
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 
+	//car headlights
 	GLfloat light_ambient2[] = { 1.0, 1.0, 1.0, 1.0 };
 	GLfloat specular2[] = { 1.0f, 1.0f, 1.0f , 1.0f };
 	GLfloat light_position2[] = { 5.0, 2.0, 4.0, 1.0 };
@@ -1280,14 +1269,18 @@ void collisionDetection(int in)
 		if (obsZ <= carFront && obsZ >= carBack && obsX <= carLeft && obsX >= carRight)
 		{
 			//time = 0;
-			if (obstacles[i].type == 3)
+			if (obstacles[i].type == 3){
 				powerUp();
+				PlaySound(TEXT("sounds/man_screaming.wav"), NULL, SND_FILENAME | SND_ASYNC);
+			}
 			else if (obstacles[i].type == 1){
 				largeObject();
 				PlaySound(TEXT("sounds/car_crash.wav"), NULL, SND_FILENAME | SND_ASYNC);
 			}
-			else if (obstacles[i].type == 2)
+			else if (obstacles[i].type == 2){
 				smallObject();
+				PlaySound(TEXT("sounds/small_object.wav"), NULL, SND_FILENAME | SND_ASYNC);
+			}
 		}
 	}
 	glutTimerFunc(50, collisionDetection, 0);
@@ -1349,7 +1342,7 @@ void main(int argc, char** argv)
 
 	glutInitWindowSize(WIDTH, HEIGHT);
 
-	glutInitWindowPosition(100, 150);
+	glutInitWindowPosition(50, 50);
 
 	glutCreateWindow(title);
 
