@@ -568,7 +568,7 @@ void myDisplay(void)
 	char timestr[512];
 	int minutes = time / 60;
 	int seconds = (int)time % 60;
-	int milliSeconds = (time - minutes - seconds)*100;
+	int milliSeconds = (time - (int)time) * 10;
 	sprintf(timestr, "%d:%d:%d", minutes,seconds,milliSeconds);//converts double to string
 	//drawBitmapText(timestr, Eye.x + 10, 0, Eye.z + 10); // moves with the camera
 	drawBitmapText2D(timestr, WIDTH-90, 13); // moves with the camera
