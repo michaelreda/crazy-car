@@ -137,17 +137,17 @@ double random_man_lane = rand() % 4;
 // Lighting Configuration Function
 //=======================================================================
 
-void InitLightSource()
+void Lights()
 {
 
 	glEnable(GL_LIGHTING);
 
 
 	//car headlights
-	GLfloat light_ambient2[] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat specular2[] = { 1.0f, 1.0f, 1.0f , 1.0f };
-	GLfloat light_position2[] = { 5.0, 2.0, 4.0, 1.0 };
-	GLfloat light_position[] = { 0.0f, 10.0f, 0.0f, 1.0f };
+	float light_ambient2[] = { 5.0, 5.0, 5.0, 1.0 };
+	float specular2[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	float light_position2[] = { 5.0, 2.0, 4.0, 1.0 };
+	float light_position[] = { 0.0f, 10.0f, 0.0f, 1.0f };
 	glLightfv(GL_LIGHT1, GL_POSITION, light_position);
 	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 45.0);
 	glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.1f);
@@ -205,7 +205,7 @@ void myInit(void)
 	// UP (ux, uy, uz):  denotes the upward orientation of the camera.							 //
 	//*******************************************************************************************//
 
-	InitLightSource();
+	Lights();
 
 	InitMaterial();
 
@@ -473,14 +473,12 @@ void myDisplay(void)
 
 	//light
 	glEnable(GL_LIGHT0);
-	GLfloat lightSpecular[] = { light, light, light, light };
-	glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
-	GLfloat lightDiffuse[] = { light, light, light, light };
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
-	GLfloat lightIntensity[] = { light, light, light, light };
-	GLfloat lightPosition[] = { 0.0f, 100.0f, 0.0f, 0.0f };
+	float light_array[] = { light, light, light, light };
+	glLightfv(GL_LIGHT0, GL_SPECULAR, light_array);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_array);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, light_array);
+	float lightPosition[] = { 10.0f, 120.0f, 15.0f, 0.0f };
 	glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
-	glLightfv(GL_LIGHT0, GL_AMBIENT, lightIntensity);
 
 
 
@@ -1145,35 +1143,6 @@ void myKeyboard(unsigned char button, int x, int y)
 	//glutPostRedisplay();
 }
 
-//=======================================================================
-// Motion Function
-//=======================================================================
-void myMotion(int x, int y)
-{
-	y = HEIGHT - y;
-
-	if (cameraZoom - y > 0)
-	{
-		Eye.x += -0.1;
-		Eye.z += -0.1;
-	}
-	else
-	{
-		Eye.x += 0.1;
-		Eye.z += 0.1;
-	}
-
-	cameraZoom = y;
-
-	glLoadIdentity();	//Clear Model_View Matrix
-
-	gluLookAt(Eye.x, Eye.y, Eye.z, At.x, At.y, At.z, Up.x, Up.y, Up.z);	//Setup Camera with modified paramters
-
-	GLfloat light_position[] = { 0.0f, 10.0f, 0.0f, 1.0f };
-	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-
-	//glutPostRedisplay();	//Re-draw scene 
-}
 
 //=======================================================================
 // Mouse Function
@@ -1613,7 +1582,6 @@ void main(int argc, char** argv)
 
 	glutKeyboardFunc(myKeyboard);
 
-	glutMotionFunc(myMotion);
 
 	glutMouseFunc(myMouse);
 
