@@ -114,7 +114,7 @@ GLTexture tex_race_end;
 double ground;
 float MAX_SPEED = 4.0f;
 #define ROTATION_MULTIPLIER 8.0f
-#define DRAG 0.04f
+#define DRAG 0.009f
 #define MAX_CAR_ROT_ANGLE 3.0f
 #define MAX_CAR_LR_DISP 13.0f
 Car car;
@@ -544,7 +544,7 @@ void myDisplay(void)
 	glPushMatrix();
 	//glColor3d(1, 1, 1);
 	char statusStr[512];
-	sprintf(statusStr, "Car Status: %d Car Speed: %d Km/h", car_status, (int)(speed * 10));//converts double to string
+	sprintf(statusStr, "Car Status: %d Car Speed: %d Km/h", car_status, (int)(speed * 20));//converts double to string
 	//sprintf(statusStr, "Light: %f sky_theta: %g Km/h", light, sky_theta);//converts double to string
 	drawBitmapText2D(statusStr, 10, 10); // moves with the camera
 	glPopMatrix();
@@ -1279,11 +1279,11 @@ void carControlTimer(int val)
 			on_obstacle -= 1;
 		}
 		if (speed < MAX_SPEED - 0.1f)
-			speed += 0.1f;
+			speed += 0.03f;
 	}
 	else if (braking)
 	{
-		speed -= 0.2f;
+		speed -= 0.1f;
 		if (speed < 0)
 			speed = 0.0f;
 	}
